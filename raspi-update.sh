@@ -5,4 +5,6 @@ for i in $(seq 4); do
     ssh $host rm /home/pi/*.deb
     scp unstet_*_all.deb ${host}:.
     ssh $host sudo dpkg -i /home/pi/*.deb
+    ssh $host sudo systemctl daemon-reload
+    ssh $host sudo systemctl restart unstet-aemon.service
 done
