@@ -1,0 +1,14 @@
+Source: unstet
+Section: unknown
+Priority: extra
+Maintainer: Basil Stotz <stotz@amxa.ch>
+Build-Depends: debhelper (>= 8.0.0)
+Standards-Version: 3.9.2
+Package: unstet
+Architecture: all
+Version: %%version%% 
+Depends: node | nodejs, chromium
+Description: Unstet
+ Unstet
+
+

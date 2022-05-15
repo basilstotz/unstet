@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Unstet
+Comment=Unstet Player
+Exec=unstet-player
+Terminal=false
+Type=Application
+Icon=unstet-player.png
+Categories=Video
