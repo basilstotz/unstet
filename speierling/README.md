@@ -1,3 +1,3 @@
 # Speierling auf Openstreetmap
 
-![Verbreitung auf OSM](/assets/images/speierling-suchfeld.png)
+![Verbreitung auf OSM](unstet/speierling/speierling-suchfeld.png)
