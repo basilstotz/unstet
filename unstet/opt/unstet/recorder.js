@@ -2,7 +2,15 @@
 
 //https://github.com/adzialocha/osc-js
 
-const port = 9001
+let port;
+
+const Args = process.argv.slice(2);
+if(Args[0]){
+    port=Args[0];
+}else{
+    port=9001;
+}
+
 
 //########################################################
 
@@ -14,6 +22,8 @@ var init = true;
 var last;
 
 osc.open();
+console.log('recorder listening on localhost:' + port);
+
 osc.on('*', message => {
 
     let diff,now,bundle;

@@ -24,7 +24,7 @@ var io = require('socket.io')(server,{
         origin: "http://localhost:3000",
         methods: ["GET", "POST"],
         transports: ['websocket', 'polling'],
-        credentials: true
+         credentials: true
     },
     allowEIO3: true
 });

@@ -4,19 +4,12 @@ const lineByLine = require('n-readlines');
 const OSC = require('osc-js');
 
 
-const options = {
-  type: 'udp4',
-  open: {
-    host: 'localhost',
-    port: 9010,
-    exclusive: false
-  },
-  send: {
-    host: 'localhost', 
-    port: 9000
-  }
-}
+//change here///////////////////////////////////////////////////////
 
+let dest= [ "192.168.10.1","192.168.10.2","192.168.10.3","192.168.10.4" ];
+
+
+//////////////////////////////////////
 
 
 const osc = new OSC({ plugin: new OSC.DatagramPlugin() })
@@ -34,20 +27,30 @@ if(myArgs[0]){
 }
 
 const liner = new lineByLine(file);
- 
 let line;
-let lineNumber = 0;
+
 let bundle={ time: -1 };
 
-
-
 function play(){
+
+    let video;
+    let host;
+    let address;
+    let options;
+
     if(bundle.time >= 0){
 
-	//console.log(hosts[bundle.message.args[1]] + ':' + JSON.stringify(bundle.message));
-	console.log(JSON.stringify(bundle.message));
-       m=new OSC.Message(bundle.message.address,bundle.message.args[0]);
-	osc.send(m , { host: 'localhost', hostport: 9000 });
+	//console.log(JSON.stringify(bundle.message));
+	
+        address = bundle.message.address;
+        video = bundle.message.args[0];
+
+	host  = dest[bundle.message.args[1]-1];
+	options = { send: { host: host, port: 9000}};
+	msg = new OSC.Message(address,video);
+	
+	osc.send(msg ,options );
+	console.log(JSON.stringify(msg) + ' -> ' +JSON.stringify(options));
     }
     
     if(line = liner.next()){
@@ -59,4 +62,4 @@ function play(){
 }
 
 play();    
-console.log('end of line reached');
+//console.log('end of line reached');
