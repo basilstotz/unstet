@@ -24942,6 +24942,29 @@
           52.5294738
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "id": "node/2387534351",
+      "properties": {
+        "type": "node",
+        "id": "2387534351",
+        "tags": {
+          "genus:en": "Rowan",
+          "natural": "tree",
+          "species": "Sorbus domestica",
+          "species:wikidata": "Q159558"
+        },
+        "relations": [],
+        "meta": {}
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -7.258103,
+          52.6520149
+        ]
+      }
     }
   ]
 }
