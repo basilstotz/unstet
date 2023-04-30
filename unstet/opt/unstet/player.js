@@ -24,7 +24,7 @@ const lineByLine = require('n-readlines');
 const OSC = require('osc-js');
 
 
-<<<<<<< HEAD
+
 const config=JSON.parse(read('replay-conf.json'));
 const file=config.file;
 const hosts=config.hosts;
@@ -44,37 +44,17 @@ const options={
 }
 
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) })
-=======
+
 //change here///////////////////////////////////////////////////////
 
-let dest= [ "192.168.10.1","192.168.10.2","192.168.10.3","192.168.10.4" ];
-
-
-//////////////////////////////////////
-
-
-const osc = new OSC({ plugin: new OSC.DatagramPlugin() })
->>>>>>> c3ed76d2f24bdd2e1b834ae2ce5be1324001c188
 osc.open() // bind udp socket to port 41234
-
-/*
-let dest= [ "192.168.10.1","192.168.10.2","192.168.10.3","192.168.10.4" ];
-const hosts = [ '192.168.1.10','192.168.1.11','192.168.1.23','192.168.1.13'];
-let file;
-const myArgs = process.argv.slice(2);
-if(myArgs[0]){
-    file=myArgs[0];
-}else{
-    file='messages.txt';
-}
-*/
 
 const liner = new lineByLine(file);
 let line;
 
 let bundle={ time: -1 };
 
-<<<<<<< HEAD
+
 /*
 {"time":39,"message":{"offset":24,"address":"/beamer4/video","types":",i","args":[32]}}
 {"time":41,"message":{"offset":24,"address":"/beamer3/video","types":",i","args":[13]}}
@@ -83,30 +63,19 @@ let bundle={ time: -1 };
 {"time":1050,"message":{"offset":24,"address":"/beamer1/video","types":",i","args":[43]}}
 {"time":1750,"message":{"offset":24,"address":"/beamer2/video","types":",i","args":[21]}}
 */
-=======
-function play(){
->>>>>>> c3ed76d2f24bdd2e1b834ae2ce5be1324001c188
 
-    let video;
-    let host;
-    let address;
-    let options;
-
-<<<<<<< HEAD
 function play(){
+
 
     let video;
     let host;
     let address='/video';
     let options;
 
-=======
->>>>>>> c3ed76d2f24bdd2e1b834ae2ce5be1324001c188
     if(bundle.time >= 0){
 
 	//console.log(JSON.stringify(bundle.message));
 	
-<<<<<<< HEAD
 	switch(bundle.message.address){
 	case '/beamer1/video':
 	    host=hosts[0];
@@ -125,12 +94,6 @@ function play(){
 	
         video = bundle.message.args[0];
 
-=======
-        address = bundle.message.address;
-        video = bundle.message.args[0];
-
-	host  = dest[bundle.message.args[1]-1];
->>>>>>> c3ed76d2f24bdd2e1b834ae2ce5be1324001c188
 	options = { send: { host: host, port: 9000}};
 	msg = new OSC.Message(address,video);
 	
@@ -148,8 +111,3 @@ function play(){
 }
 
 play();    
-<<<<<<< HEAD
-
-=======
-//console.log('end of line reached');
->>>>>>> c3ed76d2f24bdd2e1b834ae2ce5be1324001c188
