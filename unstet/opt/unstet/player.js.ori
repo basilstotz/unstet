@@ -30,6 +30,26 @@ const file=config.file;
 const hosts=config.hosts;
 const port=config.port;
 
+
+let options={
+  type: 'udp4',         // @param {string} 'udp4' or 'udp6'
+  open: {
+    host: '0.0.0.0',    // @param {string} Hostname of udp server to bind to
+    port: 9010,          // @param {number} Port of udp server to bind to
+    exclusive: false      // @param {boolean} Exclusive flag
+  },
+  send: {
+    host: '0.0.0.0',    // @param {string} Hostname of udp client for messaging
+    port: 9000           // @param {number} Port of udp client for messaging
+  }
+}
+
+const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) })
+
+//change here///////////////////////////////////////////////////////
+
+osc.open() // bind udp socket to port 41234
+
 const liner = new lineByLine(file);
 let line;
 
@@ -50,9 +70,14 @@ function play(){
 
     let video;
     let host;
+    let address='/video';
+    let options;
+    let msg;
     
     if(bundle.time >= 0){
 
+	//console.log(JSON.stringify(bundle.message));
+	
 	switch(bundle.message.address){
 	case '/beamer1/video':
 	    host=hosts[0];
@@ -67,9 +92,15 @@ function play(){
 	    host=hosts[3];
 	    break;
 	}
+	//host  = dest[bundle.message.args[1]-1];
 	
         video = bundle.message.args[0];
 
+	//options = { send: { host: host, port: 9000}};
+	//msg = new OSC.Message(address,video);
+	
+	//osc.send(msg,{ host: host, port: 9000} );
+	//console.log(JSON.stringify(msg)+ ' -> ' +host+'::'+video);
 	shell("oscsend "+host+" 9000 /video i "+video);
     }
     
@@ -77,6 +108,7 @@ function play(){
         bundle=JSON.parse(line.toString('ascii'));
 	setTimeout(play,bundle.time);
     }else{
+	osc.close();
 	console.log('end of file reached');
     }
 }
