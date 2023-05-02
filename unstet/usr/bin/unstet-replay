@@ -1,0 +1,5 @@
+#!/bin/sh
+
+
+oscfile /opt/unstet/rec/aufahme-samstag.rec | oscroute
+

@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Unstet-Player
-Comment=Unstet Player
+Name=Unstet-Presenter
+Comment=Unstet Presenter
 Exec=unstet-presenter
 Terminal=false
 Type=Application
