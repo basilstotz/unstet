@@ -45,6 +45,11 @@ let bundle={ time: -1 };
 {"time":1750,"message":{"offset":24,"address":"/beamer2/video","types":",i","args":[21]}}
 */
 
+/*
+"time":100,"message":{"offset":20,"address":"/video","types":",ii","args":[11,1]}}
+{"time":7,"message":{"offset":20,"address":"/video","types":",ii","args":[43,4]}}
+*/
+
 function play(){
 
 
@@ -70,7 +75,7 @@ function play(){
 	
         video = bundle.message.args[0];
 
-	shell("oscsend "+host+" 9000 /video i "+video);
+	shell("oscsend "+host+" "+port+" /video i "+video);
     }
     
     if(line = liner.next()){

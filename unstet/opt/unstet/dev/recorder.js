@@ -18,28 +18,24 @@ const OSC = require('osc-js');
 const options = { open: { host: '0.0.0.0', port: port }};
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) });
 
-var init = true;
-var last;
+
+var last=-1;
 
 osc.open();
 console.log('recorder listening on localhost:' + port);
 
 osc.on('*', message => {
-
     let diff,now,bundle;
     
     now = new Date().getTime();    
-
-    if(init){
-	diff = 100; init = false;
-    }else{
+    if(last>0){
         diff = now - last;
+    }else{
+	diff = 0
     }
-    
     last = now;
     
-    bundle= { time: diff, message: message };
+    bundle= { clock: now, time: diff, message: message };
     process.stdout.write(JSON.stringify(bundle)+'\n');
-    
 });
 
