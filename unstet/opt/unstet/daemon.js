@@ -61,7 +61,7 @@ const options = {
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) });
 osc.open();
 
-osc.on('open' message => {
+osc.on('open', message => {
     console.log('OSC-Server listening on port 9000');
 });
 

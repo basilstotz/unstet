@@ -3,8 +3,8 @@ Description=Unstet-Replay
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/unstet-replay
-Restart=on-failure
+ExecStart=/usr/local/bin/unstet-replay
+Restart=always
 RestartSec=10
 
 [Install]

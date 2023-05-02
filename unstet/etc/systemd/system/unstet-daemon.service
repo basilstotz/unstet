@@ -3,7 +3,7 @@ Description=Unstet-Server
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/unstet-daemon
+ExecStart=/usr/local/bin/unstet-daemon
 Restart=on-failure
 RestartSec=10
 

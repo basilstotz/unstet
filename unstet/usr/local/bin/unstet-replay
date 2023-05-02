@@ -1,4 +1,9 @@
 #!/bin/sh
 
-oscfile /opt/unstet/rec/aufahme-samstag.rec | oscroute
+while true; do
+    oscfile /opt/unstet/rec/unstet.rec | oscroute
+done
+
+exit 1
+
 

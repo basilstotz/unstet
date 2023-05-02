@@ -7,7 +7,7 @@ Standards-Version: 3.9.2
 Package: unstet
 Architecture: all
 Version: %%version%% 
-Depends: node | nodejs, chromium
+Depends: nodejs,chromium,liblo-tools
 Description: Unstet
  Unstet
 
