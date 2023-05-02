@@ -56,14 +56,16 @@ const options = {
   }
 }
 
-console.log('OSC-Server litening on port 9000');
+
 
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) });
 osc.open();
 
-
-osc.on('*', message => {
-    console.log('recieved osc-message: '+message);
-    io.sockets.emit('osc',message);
+osc.on('open' message => {
+    console.log('OSC-Server listening on port 9000');
 });
 
+osc.on('*', message => {
+    console.log('recieved osc-message: '+JSON.stringify(message));
+    io.sockets.emit('osc',message);
+});
