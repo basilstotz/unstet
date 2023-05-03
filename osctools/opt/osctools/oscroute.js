@@ -43,7 +43,6 @@ if(Args[1]){
     for(i=0;i<Args.length;i++){
 //	if(Args[i].startsWith('/')){
 
-	    console.log(Args[i]);	    
 	    let route=Args[i].split('@');
 	    
 //            if(!route[0]){route[0]='';}
@@ -59,8 +58,7 @@ if(Args[1]){
 	    table.push( { route: route[0], path: route[1], host: host, port: port  } )
 //	}
     }
-    
-    //write(path,JSON.stringify(table));    
+    write(path,JSON.stringify(table));    
 }else{
     if(fs.existsSync(path)){
 	table=JSON.parse(read(path));
@@ -71,7 +69,6 @@ if(Args[1]){
 
 
 console.log(JSON.stringify(table,null,2));
-process.exit();
 
 /*
 {"clock":1682961843314,"time":3405,"message":{"offset":32,"address":"/beamer/2/video","types":",is","args":[25,"sdfsdaf"]}}
@@ -104,7 +101,7 @@ function route(message){
     let destAddress;
     
     for(let i=0;i<table.length;i++){
-	let full=table[i].route+table[i].path; console.log(full);
+	let full=table[i].route+table[i].path;
 	if(message.address.indexOf(full)==0){
 	    destAddress=message.address.substring(table[i].route.length);
 
@@ -119,6 +116,3 @@ function route(message){
 	}
     }    
 }
-
-
-    
