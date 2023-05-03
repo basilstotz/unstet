@@ -36,7 +36,7 @@ osc.open();
 //console.log('receiver listening on localhost:' + port);
 
 osc.on('*', message => {
-    process.stdout.write(JSON.stringify(message)+' '+name.length+'\n');
+    process.stdout.write(JSON.stringify(message)+'\n');
     if(name.length>0){record(message);}
 });
 

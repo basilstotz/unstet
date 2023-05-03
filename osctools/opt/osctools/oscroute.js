@@ -41,14 +41,26 @@ const path=process.env.HOME+'/.oscroute.rc';
 
 if(Args[1]){
     for(i=0;i<Args.length;i++){
-	if(Args[i].startsWith('/')){
-	    let route=Args[i];
+//	if(Args[i].startsWith('/')){
+
+	    console.log(Args[i]);	    
+	    let route=Args[i].split('@');
+	    
+//            if(!route[0]){route[0]='';}
+	    if((route[0]!='/')&&(route[0].endsWith('/')))route[0]=route[0].substr(0,route[0].length-1);
+
+	    if(!route[1]){route[1]='';}else{route[1]='/'+route[1];}
+
 	    i++;
 	    let dest=Args[i].split(":");
-	    table.push( { route: route, ip: dest[0], port: dest[1] } )
-	}
+	    let host=dest[0];
+	    let port=dest[1]
+
+	    table.push( { route: route[0], path: route[1], host: host, port: port  } )
+//	}
     }
-    write(path,JSON.stringify(table));    
+    
+    //write(path,JSON.stringify(table));    
 }else{
     if(fs.existsSync(path)){
 	table=JSON.parse(read(path));
@@ -59,10 +71,11 @@ if(Args[1]){
 
 
 console.log(JSON.stringify(table,null,2));
-
+process.exit();
 
 /*
 {"clock":1682961843314,"time":3405,"message":{"offset":32,"address":"/beamer/2/video","types":",is","args":[25,"sdfsdaf"]}}
+
 */
 
 const readline = require('readline');
@@ -91,24 +104,21 @@ function route(message){
     let destAddress;
     
     for(let i=0;i<table.length;i++){
-	if(message.address.indexOf(table[i].route)==0){
-	    host=table[i].ip;
-	    port=table[i].port;
-	    if(table.length==1){
-		destAddress=message.address;
-	    }else{
-		destAddress='/'+message.address.split('/').slice(3).join('/');
-	    }
+	let full=table[i].route+table[i].path; console.log(full);
+	if(message.address.indexOf(full)==0){
+	    destAddress=message.address.substring(table[i].route.length);
+
 	    response = new OSC.Message(destAddress);
-	    for(let j=0;j<message.args.length;j++){
-		response.add(message.args[j]);
-	    }
-	    osc.send(response,{ port: port, host: host })
-	    //console.log(JSON.stringify(message)+" --> "+host+":"+port+" "+JSON.stringify(response));
+	    for(let j=0;j<message.args.length;j++)response.add(message.args[j]);
+
+	    host=table[i].host;
+	    port=table[i].port
+	    osc.send(response,{ port: port , host: host })
 	    console.log(JSON.stringify(response)+" -> "+host+":"+port);	
 	    break;
 	}
     }    
 }
-    
+
+
     
