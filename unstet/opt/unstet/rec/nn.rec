@@ -1,4 +1,0 @@
-{"clock":1683005362805,"time":0,"message":{"offset":24,"address":"/beamer/1/video","types":",i","args":[24]}}
-{"clock":1683005393130,"time":30325,"message":{"offset":32,"address":"/beamer/1/jadeo/osd/","types":",i","args":[0]}}
-{"clock":1683005400434,"time":7304,"message":{"offset":32,"address":"/beamer/2/jadeo/osd/","types":",i","args":[0]}}
-{"clock":1683005407154,"time":6720,"message":{"offset":24,"address":"/beamer/3/video","types":",i","args":[24]}}

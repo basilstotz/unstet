@@ -1,1 +1,0 @@
-{"clock":1682948599023,"time":0,"message":{"offset":32,"address":"/beamer/1/video","types":",is","args":[25,"sdfsdaf"]}}
