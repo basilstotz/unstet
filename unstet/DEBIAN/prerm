@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerm script for blitzrechnen
+x1# prerm script for blitzrechnen
 #
 # see: dh_installdeb(1)
 
@@ -20,13 +20,6 @@ set -e
 case "$1" in
     remove|upgrade|deconfigure)
 	
-	rm -f /etc/flatpak/installations.d/thymio-suite.conf
-	rm -f /etc/udev/rules.d/99-mobsya.rules
-	rm -f /usr/local/bin/thymio-suite
-        rm -f /usr/share/applications/thymio-suite.desktop
-	
-	rm -rf /opt/thymio-suite
-        	
     ;;
 
     failed-upgrade)

@@ -31,10 +31,10 @@ case "$1" in
         "width": 1280,
         "height": 700
     },
-    "buttons": true
+    "buttons": false
 }
 EOF
-	    
+        	    
 	fi
 	chmod a+rw $CONFIG
     ;;
