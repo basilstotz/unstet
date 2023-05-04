@@ -18,8 +18,6 @@ if(Args[1]){
     name=Args[1];
 }
     
-//console.log(name);
-
 const fs = require('fs');
 function write(name,data){
     fs.writeFileSync(name,data,{encoding:'utf8', flag:'a'});
@@ -31,9 +29,7 @@ const OSC = require('osc-js');
 const options = { open: { host: '0.0.0.0', port: port }};
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) });
 
-
 osc.open();
-//console.log('receiver listening on localhost:' + port);
 
 osc.on('*', message => {
     process.stdout.write(JSON.stringify(message)+'\n');
@@ -42,8 +38,9 @@ osc.on('*', message => {
 
 
 function  record(message){
+
     let diff,now,bundle;
-    //let d,n;
+
     now = new Date().getTime();
     if(last>0){
         diff = now - last;
@@ -55,8 +52,6 @@ function  record(message){
     bundle= { clock: now, time: diff, message: message };
     write(name,JSON.stringify(bundle)+'\n');
 
-    //n=new Date().getTime();d=n-now
-    //console.log(d);
 };
 
 
