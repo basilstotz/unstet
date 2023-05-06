@@ -24,9 +24,10 @@ then edit `/etc/xdg/lxsession/LXDE-pi/autostart`:
 @xset s -dpms
 @unclutter
 ```
-You also might want to increase the GPU-memory to 256 Mb in case the videos are laging.
+You also might want to increase the GPU-memory to 256 Mb in case the videos are laging. See 
+https://www.elektronik-kompendium.de/sites/raspberry-pi/2002121.htm for details
 
-No sound on HDMI? As simple as right click on the speaker and change it to hdmi.
+No sound on HDMI? As simple as right click on the speaker and change it to hdmi. 
 
 
 ## Build and Install
