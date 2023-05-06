@@ -18,11 +18,11 @@ then edit `/etc/xdg/lxsession/LXDE-pi/autostart`:
 ```
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
-#@xscreensaver -no-splash                                       #<------
+#@xscreensaver -no-splash                                       #<------ add a leading #
 @xset s noblanc
 @xset s off
 @xset s -dpms
-@unclutter
+@unclutter                                                      #<------ add this line
 ```
 You also might want to increase the GPU-memory to 256 Mb in case the videos are laging. See 
 https://www.elektronik-kompendium.de/sites/raspberry-pi/2002121.htm for details
