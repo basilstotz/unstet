@@ -1,11 +1,13 @@
 # Unstet
 
-**Unstet** is a video player, wich is controlled by OSC-messages sent by a Max/MSP-patch (or any other OSC-client). It's designed for a RaspberryPi, but it work's on any Debian based system.
+**Unstet** is a video player based on p5js (https://p5js.org), wich is controlled by OSC-messages (Open Sound Control https://ccrma.stanford.edu/groups/osc/index.html) sent by a Max/MSP-patch (https://cycling74.com/products/max) or any other OSC-client.
 
-It listens for OSC-message on **upd port 9000** at the OSC-address **/video**. It exspects one integer parameter which selects the desired video to play 
+It's designed for a RaspberryPi, but it work's on any Debian based system.
+
+It listens for OSC-message on **upd port 9000** at the OSC-address **/video**, it exspects one integer parameter which selects the desired video to play. The messages are then passed, unsing websockets, to the p5js-sketch.
 
 ## Prepare Raspi
-### Switch Off Screensaver and Mousepointer
+### Switch Off Screensaver and  
 
 Install *unclutter*:
 ```
