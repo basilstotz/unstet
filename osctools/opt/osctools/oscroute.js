@@ -94,20 +94,16 @@ rl.once('close', () => {
 
 
 function route(message){
-    
+	
     for(let i=0;i<table.length;i++){
 	let item=table[i];    
 	if(message.address.indexOf(item.route+item.path)==0){
-	    let destAddress=message.address.substring(item.route.length);
-	    let response = new OSC.Message(destAddress);
+	    let response = new OSC.Message(message.address.substring(item.route.length));
 	    for(let j=0;j<message.args.length;j++){
 		    response.add(message.args[j]);
 	    }
-	    let host=item.host;
-	    let port=item.port;
-		
-	    osc.send(response,{ port: port , host: host })
-	    console.log(JSON.stringify(response)+" -> "+host+":"+port);	
+	    osc.send(response,{ port: item.port , host: item.host })
+	    console.log(JSON.stringify(response)+" --> "+host+":"+port);	
 	    break;
 	}
     }    
