@@ -85,7 +85,7 @@ const rl = readline.createInterface({
 
 
 rl.on('line', (line) => {
-    route(JSON.parse(line));
+    route(table,JSON.parse(line));
 });
 
 rl.once('close', () => {
@@ -93,7 +93,7 @@ rl.once('close', () => {
  });
 
 
-function route(message){ 
+function route(table,message){ 
     table.forEach((item) => { 
 	if(message.address.indexOf(item.route+item.path)==0){
 	    let response = new OSC.Message(message.address.substring(item.route.length));
