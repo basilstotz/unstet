@@ -7,7 +7,7 @@ It's designed for a RaspberryPi, but it work's on any Debian based system.
 It listens for OSC-message on **upd port 9000** at the OSC-address **/video**, it exspects one integer parameter which selects the desired video to play. The messages are then passed, unsing websockets, to the p5js-sketch.
 
 ## Prepare Raspi
-### Switch Off Screensaver and  
+### Switch Off Screensaver and Hide Mouse
 
 Install *unclutter*:
 ```
@@ -18,13 +18,13 @@ then edit `/etc/xdg/lxsession/LXDE-pi/autostart`:
 ```
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
-#@xscreensaver -no-splash
+#@xscreensaver -no-splash                                       #<------
 @xset s noblanc
 @xset s off
 @xset s -dpms
 @unclutter
 ```
-You also might want to increase the GPU-memory to 266 Mb in case the videos are laging.
+You also might want to increase the GPU-memory to 256 Mb in case the videos are laging.
 
 No sound on HDMI? As simple as right click on the speaker and change it to hdmi.
 
