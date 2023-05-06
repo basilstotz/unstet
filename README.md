@@ -1,6 +1,6 @@
 # Unstet
 
-**Unstet** is a video player based on p5js (https://p5js.org), wich is controlled by OSC-messages (Open Sound Control https://ccrma.stanford.edu/groups/osc/index.html) sent by a Max/MSP-patch (https://cycling74.com/products/max) or any other OSC-client.
+**Unstet** is a video player based on node, express and p5js (https://p5js.org) running in a web browser. It is controlled by OSC-messages (Open Sound Control https://ccrma.stanford.edu/groups/osc/index.html) sent by a Max/MSP-patch (https://cycling74.com/products/max) or any other OSC-Client.
 
 It's designed for a RaspberryPi, but it work's on any Debian based system.
 
