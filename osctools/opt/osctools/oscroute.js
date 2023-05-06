@@ -93,18 +93,14 @@ rl.once('close', () => {
  });
 
 
-function route(message){
-	
-    for(let i=0;i<table.length;i++){
-	let item=table[i];    
+function route(message){ 
+    table.forEach((item) => { 
 	if(message.address.indexOf(item.route+item.path)==0){
 	    let response = new OSC.Message(message.address.substring(item.route.length));
-	    for(let j=0;j<message.args.length;j++){
-		    response.add(message.args[j]);
-	    }
+            message.args.forEach((arg)=>{response.add(arg)});
 	    osc.send(response,{ port: item.port , host: item.host })
-	    console.log(JSON.stringify(response)+" --> "+host+":"+port);	
+	    //console.log(JSON.stringify(response)+" --> "+host+":"+port);	
 	    break;
 	}
-    }    
+    });
 }
