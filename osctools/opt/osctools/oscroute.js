@@ -58,7 +58,7 @@ if(Args[1]){
 	    table.push( { route: route[0], path: route[1], host: host, port: port  } )
 //	}
     }
-    write(path,JSON.stringify(table));    
+    write(path,JSON.stringify(table,null,2));    
 }else{
     if(fs.existsSync(path)){
 	table=JSON.parse(read(path));
@@ -94,13 +94,14 @@ rl.once('close', () => {
 
 
 function route(table,message){ 
-    table.forEach((item) => { 
+    table.find((item) => { 
 	if(message.address.indexOf(item.route+item.path)==0){
 	    let response = new OSC.Message(message.address.substring(item.route.length));
             message.args.forEach((arg)=>{response.add(arg)});
-	    osc.send(response,{ port: item.port , host: item.host })
-	    //console.log(JSON.stringify(response)+" --> "+host+":"+port);	
-	    break;
+	    osc.send(response,{ host: item.host, port: item.port })
+	    console.log(JSON.stringify(response)+" --> "+item.host+":"+item.port);	
+	    return true;
 	}
+	return false;
     });
 }
