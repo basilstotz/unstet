@@ -13,8 +13,7 @@ Install *unclutter*:
 ```
 sudo apt install unclutter
 ```
-
-then edit `/etc/xdg/lxsession/LXDE-pi/autostart`:
+then remoce the screensave from systemwide lxsession-autostart: `/etc/xdg/lxsession/LXDE-pi/autostart`:
 ```
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
@@ -22,8 +21,15 @@ then edit `/etc/xdg/lxsession/LXDE-pi/autostart`:
 @xset s noblanc
 @xset s off
 @xset s -dpms
-@unclutter                                                      #<------ add this line
 ```
+This can be done with ```sudo unstet-setup-screensaver-off.sh```
+
+
+Then set user autostarts, by running (no sudo!!) ```unstet-setup-user-autostart.sh```
+
+
+
+
 You also might want to increase the GPU-memory to 256 Mb in case the videos are laging. See 
 https://www.elektronik-kompendium.de/sites/raspberry-pi/2002121.htm for details
 
