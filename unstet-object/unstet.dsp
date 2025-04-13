@@ -8,6 +8,10 @@ declare options 	"[osc:on]";
 
 import("stdfaust.lib");
 
+
+//adapt for your needs
+
+//import soundfiles
 import("m11_waveform.dsp");
 import("m12_waveform.dsp");
 import("m13_waveform.dsp");
@@ -21,30 +25,27 @@ import("m41_waveform.dsp");
 import("m42_waveform.dsp");
 import("m43_waveform.dsp");
 
-
+//imports for "m11_waveform.dsp"
 //m11_0 = waveform{};
 //m11 = (m11_0):((!,_));
 //m11_rtable_0(r) = (m11_0,r):rdtable;
 
-play_wave(gate,wave) = ba.countup(m_count,m_gate(gate)):m_table
+//lists for imported sounds and their labels
+waves = ( m11_0,m12_0,m13_0,m21_0,m22_0,m23_0,m31_0,m32_0,m33_0,m41_0,m42_0,m43_0);
+labels = ( 11,12,13,21,22,23,31,32,33,41,42,43 );
+
+//number of outputs
+n_out = 4;
+
+//do not edit below this
+play_wave(label,wave) = ba.countup(m_count,m_gate(label)):m_table
 		   with {
 		   	m_count=(wave):((_,!));
 			m_table(r)=(wave,r):rdtable;
-			m_gate(gate)=button("%gate"):ba.impulsify;
+			m_gate(l)=button("%l"):ba.impulsify;
 			};
+m_play(n) = play_wave(ba.take(n+1,labels),ba.take(n+1,waves));
 
-beamer(n)=hgroup("beamer%n",
-	  play_wave(11,m11_0),
-	  play_wave(12,m12_0),
-	  play_wave(13,m13_0),
-	  play_wave(21,m21_0),
-	  play_wave(22,m22_0),
-	  play_wave(23,m23_0),
-	  play_wave(31,m31_0),
-	  play_wave(32,m32_0),
-	  play_wave(33,m33_0),
-	  play_wave(41,m41_0),
-	  play_wave(42,m42_0),
-	  play_wave(43,m43_0):>_);
+beamer(n)=hgroup( "beamer%n", par(i,ba.count(labels),m_play(i)):>_ );
 
-process = par(i,4,beamer(i+1));
+process = par(i,n_out,beamer(i+1));
