@@ -11,7 +11,7 @@ import("stdfaust.lib");
 
 //adapt for your needs
 
-//import soundfiles
+//import soundfiles (any number!)
 import("m11_waveform.dsp");
 import("m12_waveform.dsp");
 import("m13_waveform.dsp");
@@ -35,7 +35,7 @@ waves = ( m11_0,m12_0,m13_0,m21_0,m22_0,m23_0,m31_0,m32_0,m33_0,m41_0,m42_0,m43_
 labels = ( 11,12,13,21,22,23,31,32,33,41,42,43 );
 
 //number of outputs
-n_out = 4;
+N_OUT = 4;
 
 //do not edit below this
 play_wave(label,wave) = ba.countup(m_count,m_gate(label)):m_table
@@ -48,4 +48,4 @@ m_play(n) = play_wave(ba.take(n+1,labels),ba.take(n+1,waves));
 
 beamer(n)=hgroup( "beamer%n", par(i,ba.count(labels),m_play(i)):>_ );
 
-process = par(i,n_out,beamer(i+1));
+process = par(i, N_OUT, beamer(i+1));
