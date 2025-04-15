@@ -31,8 +31,8 @@ import("m43_waveform.dsp");
 //m11_rtable_0(r) = (m11_0,r):rdtable;
 
 //lists for imported sounds and their labels
-waves = ( m11_0,m12_0,m13_0,m21_0,m22_0,m23_0,m31_0,m32_0,m33_0,m41_0,m42_0,m43_0);
-labels = ( 11,12,13,21,22,23,31,32,33,41,42,43 );
+WAVES = ( m11_0,m12_0,m13_0,m21_0,m22_0,m23_0,m31_0,m32_0,m33_0,m41_0,m42_0,m43_0);
+LABELS = ( 11,12,13,21,22,23,31,32,33,41,42,43 );
 
 //number of outputs
 N_OUT = 4;
@@ -44,8 +44,8 @@ play_wave(label,wave) = ba.countup(m_count,m_gate(label)):m_table
 			m_table(r)=(wave,r):rdtable;
 			m_gate(l)=button("%l"):ba.impulsify;
 			};
-m_play(n) = play_wave(ba.take(n+1,labels),ba.take(n+1,waves));
+m_play(n) = play_wave(ba.take(n+1,LABELS),ba.take(n+1,WAVES));
 
-beamer(n)=hgroup( "beamer%n", par(i,ba.count(labels),m_play(i)):>_ );
+beamer(n)=hgroup( "beamer%n", par(i,ba.count(LABELS),m_play(i)):>_ );
 
 process = par(i, N_OUT, beamer(i+1));
