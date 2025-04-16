@@ -54,10 +54,14 @@ function doit(){
 setInterval(doit,100);
 */
 
-let oldaddr='';
+let port=5510;
+let host='localhost';
+
+if(process.argv[2])host=process.argv[2];
+if(process.argv[3])port=process.argv[3];
 
 function trigger(addr){
-    let  opts= { port: 5510, host: 'localhost' };
+    let  opts= { port: port, host: host };
     let msg;
     msg = new OSC.Message(addr,1);    
     osc.send(msg,opts);
