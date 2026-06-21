@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 
-
+// 8 mal, ausser e=7 mal
 let t4=[
     [ 0000, 1000, 2000, 3000, 4000, 5000, 6000, 7000 ],                      // a   8 sekunden
     [ 8000, 9625, 11250, 12875, 14500, 16125, 17750, 19375 ],                // b  13
@@ -15,30 +15,13 @@ let t4=[
 
 //           a   b   c   d   e   f   g   h
 let t4A = [ 000,000,000,000,000,000,000,000 ];
-
 //           a   b   c   d   e   f   g   h
 let t4B = [ 100,200,300,500,500,300,200,100 ];
-
 //           a   b   c   d   e   f   g   h
 let t4C = [ 200,300,500,800,800,500,300,200 ];
-
 //           a   b   c    d    e   f   g   h
 let t4D = [ 300,500,800,1300,1300,800,500,300 ];
 
-
-function T(out,raster,add){
-    let extra=0;
-    for(let i=0;i<raster.length;i++){
-	let phase=raster[i];
-
-	for(let j=0;j<phase.length;j++){
-	    let t=phase[j];
-	    out.push(max+t+extra)
-	    extra+=add[i];
-	}
-    }
-    max=152000+max+extra;
-}
 
 let max = 0;
 let T4 = [];
@@ -52,7 +35,7 @@ T(T4,t4,t4A);
 
 //console.log(T4);
 
-    
+// 5 mal, ausser e=4 mal
 let t3= [
     [ 000, 1600, 3200, 4800, 6400 ],              // a
     [ 8000, 10600, 13200, 15800, 18400 ],         // b
@@ -86,7 +69,7 @@ T(T3,t3,t3A);
 //console.log(T3);
 
 
-
+// 3 mal, ausser e=2 mal
 let t2 = [
     [ 000, 2666, 5333 ],         // a
     [ 8000, 12333, 16666 ] ,      // b
@@ -120,7 +103,7 @@ T(T2,t2,t2A);
 //console.log(T2);
 
 
-
+// 2 mal
 let t1 = [
     [ 0000, 4000 ],            // a
     [ 8000, 14500 ],           // b
@@ -154,6 +137,21 @@ T(T1,t1,t1A);
 
 console.log(max/60000);
 
+function T(out,raster,add){
+    let extra=0;
+    for(let i=0;i<raster.length;i++){
+	let phase=raster[i];
+
+	for(let j=0;j<phase.length;j++){
+	    let t=phase[j];
+	    out.push(max+t+extra)
+	    extra+=add[i];
+	}
+    }
+    max=152000+max+extra;
+}
+
+
 //console.log(T1);
 
 let old=0;
@@ -178,10 +176,8 @@ for(let tick=0;tick<max;tick++){
 		delay+=30;
 	    }
 	}
-	
 	//console.log(tick, res);
     }
-    
 }
 
 console.log(multi)
