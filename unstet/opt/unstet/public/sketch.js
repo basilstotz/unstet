@@ -1,5 +1,6 @@
 let b=[];
 let v=[];
+let vready=[];
 let m=[];
 
 let w,h;
@@ -15,7 +16,7 @@ let modes=3;                   // 0: show last frame
                               // 3: fader
 let fframes=15;
 
-let config={};
+let config={ buttons: true };
 let assets={};
 
 //let div;
@@ -24,7 +25,7 @@ let gmessage="no osc message yet";
 
 
 function preload(){
-    config=loadJSON('config.json');
+    //config=loadJSON('config.json');
     assets=loadJSON('assets/assets.json');
 }
 
@@ -62,6 +63,11 @@ function button(num){
 }
 
 
+function setupVideo(video){
+    console.log("setupvideo",video);
+}
+
+
 function setup() {
 
     //div=createDiv('messages are dipslyd here');
@@ -71,13 +77,57 @@ function setup() {
     h=windowHeight;
     createCanvas(w,h);
     background(0);
+
+/*
+    case 0: t='das letze Frame';
+	break;
+    case 1: t='das erste Frame';
+	break;
+    case 2: t='schwarz';
+	break;
+    case 3: t='ausblenden';
+*/
+
+
+    let sf=createP("Ende");
+    sf.position(100,100);
+    let select= createSelect();
+    select.position(200,100);
+    select.option('letztes Frame');
+    select.option('erstes Frame');
+    select.option('schwarz');
+    select.option('weiss');
+
+    select.selected('schwarz')
+
+    let select2= createSelect();
+    select2.position(200,200);
+    select2.option('nichts');
+    select2.option('einblenden');
+    select2.option('ausblenden');
+    select2.option('beides');
+
+    select2.selected('beides')
+
+
+    
     
     for (var i = 0; i < assets.videos.length; i++) {
 	let file='assets/'+assets.videos[i] + '.' +assets.extension;
 	console.log(file);
-	v[i] = createVideo(file);
+	/*
+	v[i] = createVideo(file, (loaded) => {
+	    loaded.hide();
+	    loaded.volume(1);
+	    loaded.onended(endedVideo);
+	});
+*/
+        v[i] = createVideo(file);
+	//vr[i]=false;
 	v[i].hide();
+	v[i].volume(1);
 	v[i].onended(endedVideo);
+	v[i].elt.oncanplaythrough = (e) => { console.log("trough ",e)};
 	//if(i==0){v[i].autoplay(true);}else{v[i].autoplay(false);};
 	if(config.buttons){button(i);}
     }
@@ -88,8 +138,8 @@ function setup() {
     }
 
     
-    //socket = io();
-    socket = io.connect('http://localhost:3000');
+    socket = io();
+    //socket = io.connect('http://192.168.1.112:3000');
 
 /*                                                                              
 Message {                                                                       
@@ -102,14 +152,18 @@ Message {
     socket.on('osc',
     // When we receive data
 	      function(message) {
+		  //console.log("websocket-message");
 		  //div.html(JSON.stringify(message));
 		  gmessage=JSON.stringify(message);
-		  if(config.buttons){console.log(message);}
-		  if(frameCount>100){
-		      if(message.address=='/video'){
-			  console.log("Got: " + message.args[0]);
-			  showVideo(assets.videos.indexOf(message.args[0]));
-		      }
+		  //if(config.buttons){console.log(message);}
+		  if(frameCount>1000){
+		      //if(message.address=='/video'){
+			  //console.log("Got: " + message.args[0]);
+			  //showVideo(assets.videos.indexOf(message.args[0]));
+			  let leange=v.length;
+			  let choosen=Math.floor(leange*Math.random())
+			  showVideo(choosen);
+		      //}
 		  }
 	      });
 

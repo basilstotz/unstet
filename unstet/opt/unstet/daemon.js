@@ -57,15 +57,78 @@ const options = {
 }
 
 
+function freeSocket(socket){
+    socket.busy=false;
+}
+
+function random(laenge){
+    return Math.floor(laenge*Math.random())
+}
 
 const osc = new OSC({ plugin: new OSC.DatagramPlugin(options) });
-osc.open();
 
 osc.on('open', message => {
     console.log('OSC-Server listening on port 9000');
 });
 
-osc.on('*', message => {
-    console.log('recieved osc-message: '+JSON.stringify(message));
-    io.sockets.emit('osc',message);
+
+osc.on('/bang', message => {
+
+    //console.log('recieved osc-message: '+JSON.stringify(message));
+
+    let clients=io.sockets.sockets;
+    //console.log(clients);
+
+    if(clients.size>0){
+	// make a map of free sockets;
+	let free= new Map();
+	for (const [socketID, socket] of clients) {
+	    if(!socket.busy)free.set(socketID,socket);
+	}
+	//trigger one of them
+	if(free.size>0){
+	    //console.log("free",free);
+	    let choose=random(free.size);
+
+	    // not funny solution
+	    let count=0;
+	    let id;
+	    let socket;
+	    for (const [key, value] of free) {
+		//console.log(`${count} => ${key} = ${value}`);
+		if(count==choose){
+		    id=key;
+		    socket=value;
+		}
+		count++;
+	    }
+
+	    /*
+	    let idArr=free.keys();
+	    console.log("idArr",idArr);
+	    let id=idArr[choose];
+	    let socket=free.values()[choose]
+*/
+	    //console.log("id,socket",id,socket);
+	    if(socket){
+		socket.busy=true;
+		setTimeout(freeSocket,1000,socket);
+		io.to(id).emit('osc',"gaga");
+		console.log(free.size+"/"+clients.size+" clients => emit to "+choose);
+	    }else{
+		console.log("socket not ready");
+	    }
+	}else{
+	    console.log("no free client");
+	}
+    }else{
+	console.log("no clients");
+    }
+    
+    //console.log(clients.size,choose,id);
+    //https://socket.io/docs/v3/emit-cheatsheet/
+
 });
+
+
+osc.open();

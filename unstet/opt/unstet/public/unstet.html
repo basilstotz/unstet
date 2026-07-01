@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unstet</title>
+  <style>
+    html,body {
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+      background:black;
+      color:white;
+    }
+  </style>
+<!--  <script type="text/javascript" src="addons/socket.io-1.4.5.js"></script> -->
+  <script type="text/javascript" src="addons/osc-browser.js"></script>
+<!--  <script src="addons/p5.js"></script>
+      <script src="sketch.js"></script> -->
+
+      <script>
+let port = 8081;
+let socket;
+	
+ socket = new osc.WebSocketPort({ url: 'ws://localhost:' + port });
+  
+  socket.on('message', handleOsc);
+  
+  socket.open();
+
+function handleOsc(msg) {
+  print(msg);
+  
+  if (msg.address === '/1/fader1') {
+  } else if (msg.address === '/1/fader2') {
+  } else if (msg.address === '/1/fader3') {
+  } else if (msg.address === '/1/fader4') {
+  }
+}
+</script>
+
+      
+</head>
+
+<body>
+  <main>
+  </main>
+</body>
+
+</html>

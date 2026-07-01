@@ -1,28 +1,105 @@
 #!/usr/bin/env node
 
-let phases= [ 8,13,21,34,34,21,13,8 ]
+ 
+let phases= [ 8000, 13000, 21000, 34000, 34000, 21000, 13000, 8000 ]
 
-function makePattern(phases,teiler){
-    let pattern=[];
-    let current=0;
-    for(let i=0;i<phases.length;i++){
-	phase=phases[i]*1000;
-	let delta=Math.round(phase/teiler);
-	let line=[];
-	for(j=0;j<teiler;j++){
-	    if(!(i==5 && j==0) || teiler==2)line.push(current);
-	    current+=delta;
-	}
-	//current+=delta;
-	pattern.push(line);
+    let teilerArray=[ 1, 2, 3, 5, 8, 13];
+
+    
+let addArray=[ 0, 800, 1600, 2400, 4000 ]
+
+
+function krebs(laenge,index){
+    let ind=index%(2*laenge)
+    if(ind<laenge){
+	return ind
+    }else{
+	return 2*laenge-ind-1;
     }
-    return pattern
 }
 
-let pattern=makePattern(phases,8);
+for(let i=0;i<40;i++){
+    console.log(krebs(10,i));
+}
 
-//console.log(pattern);
+process.exit(0);
 
+function getPermutations(arr) {
+  // Base case: if array has 0 or 1 elements, return it wrapped in an array
+  if (arr.length <= 1) return [arr];
+  
+  const result = [];
+  
+  for (let i = 0; i < arr.length; i++) {
+    // Extract the current element
+    const current = arr[i];
+    
+    // Get the remaining elements by filtering out the current index
+    const remaining = [...arr.slice(0, i), ...arr.slice(i + 1)];
+    
+    // Recursively get permutations of the remaining elements
+    const remainingPermutations = getPermutations(remaining);
+    
+    // Combine the current element with each sub-permutation
+    for (let j = 0; j < remainingPermutations.length; j++) {
+      result.push([current, ...remainingPermutations[j]]);
+    }
+  }
+  
+  return result;
+}
+
+
+let perm=getPermutations(addArray);
+
+console.log(perm);
+
+/*
+// Example usage:
+const numbers = [1, 2, 3];
+console.log(getPermutations(numbers));
+[
+  [1, 2, 3],
+  [1, 3, 2],
+  [2, 1, 3],
+  [2, 3, 1],
+  [3, 1, 2],
+  [3, 2, 1]
+]
+*/
+    
+
+function makePhase(length,teilerArray){
+    let bang={};
+    let maxTime=0;
+    //for all teiler do
+    for(let i=0;i<teilerArray.length;i++){
+	let teiler=teilerArray[i];
+	let delta=Math.round(length/teiler);
+        let time=0;
+	for(j=0;j<teiler;j++){
+	    let b=bang[time];
+	    if(b){
+		bang[time]=b+1;
+	    }else{
+		bang[time]=1
+	    }
+	    time+=delta;
+	}
+	if(time>maxTime)maxTime=time;
+    }
+    console.log(maxTime);
+    return bang
+}
+
+let pattern=makePhase(8000,teilerArray,addArray);
+
+console.log(pattern);
+
+
+process.exit(0);
+
+let bang ={};
 
 
 // 8 mal, ausser e=7 mal
@@ -50,13 +127,14 @@ let t4D = [ 300,500,800,1300,1300,800,500,300 ];
 let max = 0;
 let T4 = [];
 T(T4,t4,t4A);
+/*
 T(T4,t4,t4B);
 T(T4,t4,t4C);
 T(T4,t4,t4D);
 T(T4,t4,t4C);
 T(T4,t4,t4B);
 T(T4,t4,t4A);
-
+*/
 //console.log(T4);
 
 // 5 mal, ausser e=4 mal
@@ -83,13 +161,14 @@ let t3D = [ 300,500,800,1280,1280,800,500,300 ];
 max = 0;
 let T3 = [];
 T(T3,t3,t3A);
+/*
 T(T3,t3,t3B);
 T(T3,t3,t3C);
 T(T3,t3,t3D);
 T(T3,t3,t3C);
 T(T3,t3,t3B);
 T(T3,t3,t3A);
-
+*/
 //console.log(T3);
 
 
@@ -117,13 +196,14 @@ let t2D = [ 300,500,800,3466,3467,800,500,300 ];
 max = 0
 let T2 = [];
 T(T2,t2,t2A);
+/*
 T(T2,t2,t2B);
 T(T2,t2,t2C);
 T(T2,t2,t2D);
 T(T2,t2,t2C);
 T(T2,t2,t2B);
 T(T2,t2,t2A);
-
+*/
 //console.log(T2);
 
 
@@ -152,14 +232,16 @@ let t1D = [  300,500,800,5200,5200,800,500,300];
 max = 0;
 let T1 = [];
 T(T1,t1,t1A);
+/*
 T(T1,t1,t1B);
 T(T1,t1,t1C);
 T(T1,t1,t1D);
 T(T1,t1,t1C);
 T(T1,t1,t1B);
 T(T1,t1,t1A);
+*/
 
-
+// bang= { time: count }
 
 
 console.log(max/60000);
@@ -171,18 +253,28 @@ function T(out,raster,add){
 
 	for(let j=0;j<phase.length;j++){
 	    let t=phase[j];
-	    out.push(max+t+extra)
+	    let time=max+t+extra
+	    /* array version
+	    out.push(time)
+            */
+	    let b=bang[time];
+            if(b){ //console.log(time)
+		   //b=b+1;
+		   bang[time]=b+1;
+	    }else{
+		bang[time]=1
+	    }
 	    extra+=add[i];
 	}
     }
-    console.log(extra);
+    //console.log(extra);
     max=152000+max+extra;
 }
 
 
 //console.log(T1);
 
-
+/*
 // collect all timings in one array
 let old=0;
 let multi=[];
@@ -211,10 +303,12 @@ for(let tick=0;tick<max;tick++){
 }
 
 console.log(multi)
+*/
 
+//console.log(bang);
 let speed=2.0;
 let index=0;
-let maxindex=multi.length;
+//let maxindex=multi.length;
 
 
 function play(){
@@ -228,7 +322,7 @@ function play(){
     
 }
 
-play();
+//play();
 
 /*
 let diff=Object.entries(multi);
