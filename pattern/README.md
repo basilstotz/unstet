@@ -5,12 +5,13 @@ Basic setup:
 #!/usr/bin/env node                                                                                    
 const Unstet = require('./unstet.js').Unstet;
 
+// setup unstet
 let teiler = [ 1, 2, 3, 5, 8, 13];
 let phase = [ 8000, 13000, 21000, 34000 ];
 let addon = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ]; 
-
 let unstet = new Unstet( teiler, phase, addon );
 
+//add event listener
 unstet.on( 'bang', () => {
         //...do whatever you want
    });
@@ -31,12 +32,13 @@ const osc = new OSC({ plugin: new OSC.DatagramPlugin() });
 let teiler = [ 1, 2, 3, 5, 8, 13];
 let phase = [ 8000, 13000, 21000, 34000 ];
 let addon = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ]; 
-
 let unstet = new Unstet( teiler, phase, addon );
 
+// add event listener
 unstet.on( 'bang', () => {
         osc.send(new OSC.Message('/bang'))
 });
 
+// and go ...
 unstet.play();
 ``
