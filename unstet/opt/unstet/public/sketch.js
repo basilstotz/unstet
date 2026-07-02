@@ -8,6 +8,8 @@ let ds=0;
 
 var fader=0;;
 
+var intro=false;
+
 let disp=0;
 let playing=false;
 let modes=3;                   // 0: show last frame
@@ -16,12 +18,22 @@ let modes=3;                   // 0: show last frame
                               // 3: fader
 let fframes=15;
 
-let config={ buttons: true };
+let config={ buttons: false };
 let assets={};
 
 //let div;
 
 let gmessage="no osc message yet";
+
+
+
+let bildRatio=1280.0/720.0 //brete zu höhe 
+let bildBreite;
+let bildHoehe;
+let bildLeft;
+let bildTop;
+
+let socketio=true;
 
 
 function preload(){
@@ -31,7 +43,7 @@ function preload(){
 
 
 function set_mode(num){
-    if(config.buttos){
+    if(config.buttons){
        let t;
        switch(num){
        case 0: t='last';
@@ -67,6 +79,13 @@ function setupVideo(video){
     console.log("setupvideo",video);
 }
 
+function calcBild(x,y){
+    let f=bildRatio;
+    bildBreite = Math.min(x,y*f);
+    bildHoehe = Math.min(y,x/f);
+    bildLeft=(w-bildBreite)/2.0;
+    bildTop=(h-bildHoehe)/2.0;
+}
 
 function setup() {
 
@@ -76,8 +95,10 @@ function setup() {
     w=windowWidth;
     h=windowHeight;
     createCanvas(w,h);
+     calcBild(w,h);
     background(0);
 
+    console.log(bildLeft,bildTop,bildBreite,bildHoehe);
 /*
     case 0: t='das letze Frame';
 	break;
@@ -88,7 +109,7 @@ function setup() {
     case 3: t='ausblenden';
 */
 
-
+/*
     let sf=createP("Ende");
     sf.position(100,100);
     let select= createSelect();
@@ -108,7 +129,7 @@ function setup() {
     select2.option('beides');
 
     select2.selected('beides')
-
+*/
 
     
     
@@ -138,7 +159,8 @@ function setup() {
     }
 
     
-    socket = io();
+    if(socketio){
+	socket = io();
     //socket = io.connect('http://192.168.1.112:3000');
 
 /*                                                                              
@@ -149,23 +171,28 @@ Message {
   args: [ -0.06041877344250679, -0.7016952633857727, 9.782157897949219 ]        
 */
   
-    socket.on('osc',
-    // When we receive data
+	socket.on('osc',
+	      // When we receive data
 	      function(message) {
 		  //console.log("websocket-message");
 		  //div.html(JSON.stringify(message));
 		  gmessage=JSON.stringify(message);
 		  //if(config.buttons){console.log(message);}
-		  if(frameCount>1000){
+		  if(frameCount>661){
 		      //if(message.address=='/video'){
 			  //console.log("Got: " + message.args[0]);
 			  //showVideo(assets.videos.indexOf(message.args[0]));
-			  let leange=v.length;
-			  let choosen=Math.floor(leange*Math.random())
-			  showVideo(choosen);
+			  //let leange=v.length;
+			  //let choosen=Math.floor(leange*Math.random())
+		      //showVideo(choosen);
+		      bang();
 		      //}
 		  }
 	      });
+	
+    }else{
+	//setTimeout(banger,10000);
+    }
 
 }
 
@@ -180,10 +207,22 @@ function windowResized() {
 }
 */
 
+
+function banger(){
+    setInterval(bang,2000);
+}
+
+function bang(){
+    let leange=v.length;
+    let choosen=Math.floor(leange*Math.random())
+    showVideo(choosen);
+}
+
 function windowResized() {
     w=windowWidth;
     h=windowHeight;
     resizeCanvas(w,h);
+     calcBild(w,h);  
 }
 
 function endedVideo(){
@@ -202,9 +241,10 @@ function showVideo(num){
 
 
 function draw() {
-            
 
-    image(v[disp],0,0,w,h);
+
+    image(v[disp],bildLeft,bildTop,bildBreite,bildHoehe); 
+    //image(v[disp],0,0,w,h);
     //fill(128,128,128,128);
     if(!playing){
 	if(modes==2){
@@ -242,23 +282,25 @@ function draw() {
         text('Am Clipende wird '+t+' angezeigt',150,30);    
 	text(gmessage,100,150);
     }
+    
+    textAlign(CENTER,CENTER);
+    textSize(120)
+    if(frameCount>0 && frameCount<600){
+	fill(255,255,255,map(frameCount,0,600,0,255,true));
+	text("un-stet",w/2,h/2);
+    }else if(frameCount>=600 && frameCount<660){
+	fill(255,255,255,map(frameCount,600,660,255,0,true));
+	text("un-stet",w/2,h/2);
+    }
+    /*
+	//fill(255);
+	text("un-stet",w/2,h/2);
+    }else{
+	if(!intro){
+	    intro=true;
+	    bang();
+	}
+    }
+   */
 }
 
-
-/*
-//global
-let disp; //curent playing
-let vid=[]; //array with videos
-
-function schnipsel(num,start,duration) {
-    v[disp].stop();
-    disp=num;
-    v[disp].time(start);
-    v[disp].addCue(start+duration,function{
-                                v[disp].clearCues();
-                                v[disp].pause();
-                              }
-    );
-    v[disp].play(); 
-}
-*/

@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+const Unstet = require('./unstet.js');
+
+
 //import { OSC } from "osc-js"
 
 //import pkg from 'osc-js';
@@ -21,7 +24,7 @@ console.log(getPermutations(numbers));
   [3, 2, 1]
 ]
 */
-
+/*
 function getPermutations(arr) {
   // Base case: if array has 0 or 1 elements, return it wrapped in an array
   if (arr.length <= 1) return [arr];
@@ -52,253 +55,15 @@ function isEqual(a,b){
 }
  
 
-class EventEmitter {
-  constructor() {
-    this.events = {};
-  }
-
-  on(event, listener) {
-    if (!this.events[event]) this.events[event] = [];
-    this.events[event].push(listener);
-  }
-
-  once(event, listener) {
-    const wrapper = (...args) => {
-      this.off(event, wrapper);
-      listener(...args);
-    };
-    this.on(event, wrapper);
-  }
-
-  emit(event, ...args) {
-    if (!this.events[event]) return;
-    this.events[event].forEach(listener => listener(...args));
-  }
-
-  off(event, listener) {
-    if (!this.events[event]) return;
-    this.events[event] = this.events[event].filter(l => l !== listener);
-  }
-
-  removeAllListeners(event) {
-    if (this.events[event]) delete this.events[event];
-  }
-}
-
-
-
-
-
-class Phase extends EventEmitter {
-    //this.teilerArray=[];
-    
-    constructor(teilerArray){
-	super();
-	this.teilerArray = teilerArray;
-        this.phasePrototype = this.makePhasePrototype(teilerArray);
-    }
-
-    setTeiler(teilerArray){
-	this.teilerArray = teilerArray;	
-	this.phasePrototype = this.makePhasePrototype(teilerArray);
-    }
-
-    getPhase(length){
-	let bang={};
-	let factor=length/10000.0;
-	//XSconsole.log("lf ",length,factor)
-	for (const [key, value] of Object.entries(this.phasePrototype)) {
-	    let newtime=Math.round(key*factor);
-	    //console.log(key,newtime,value);
-	    bang[newtime]=value
-	}
-	return bang;
-    }
-
-    //private
-    makePhasePrototype(teilerArray){
-	let length=10000;
-	let bang={};
-
-	//this.teilerArray=teilerArry;
-	
-	//let maxTime=0;
-	//for all teiler do
-	for(let i=0;i<teilerArray.length;i++){
-	    let teiler=teilerArray[i];
-	    let delta=length/teiler;
-	    let time=0;
-	    for(let j=0;j<teiler;j++){
-		let roundTime=Math.round(time);
-		let b=bang[roundTime];
-		if(b){
-		    bang[roundTime]=b+1;
-		}else{
-		    bang[roundTime]=1
-		}
-		time+=delta;
-	    }
-	    //if(time>maxTime)maxTime=time;
-	}
-	//console.log(maxTime);
-	return bang;
-    }
-
-
-}
-
-class Period extends Phase {
-    
-    constructor(teilerArray){
-	super(teilerArray);
-	//this.phase= new Phase(teilerArray);
-	//console.log(this.phase)
-	//this.events= new EventEmitter();
-	//this.gaga="gaga";
-    }
-
-    setTeiler(teilerArray){
-	this.setTeiler(teilerArray);
-    }
-
-    playPeriod(timeArray){
-
-	//console.log("ta ",timeArray);
-	
-        let phase=this.phase;
-	let events=this.events;
-	
-	const makePeriod = (timeArray) => {
-	    let bang={};
-	    let current=0;
-
-	    let b;
-	    //calc forward
-	    for(let i=0;i<timeArray.length;i++){
-		let time=timeArray[i];
-		//console.log("i time",i,time);
-		
-		//console.log("pha",pha);
-		b=this.getPhase(time);
-		//console.log("bang",b);
-		//console.log(b);
-		for (const [key, value] of Object.entries(b)) {
-		    let t=Number(current)+Number(key);
-		    bang[t]=Number(value);
-		}
-		current+=time;
-	    }
-	    //add krebs
-	    for (const [key, value] of Object.entries(b)) {
-		let k=Number(key);
-		if(k!=0){
-		    let t=2*current-k
-		    bang[t]=Number(value);
-		}
-	    }
-	    return bang;
-	} //makePeriod
-
-	const playBang = (bang) => {
-	    
-	    const arpDelay = 30;
-	    const random = laenge => Math.floor(laenge*Math.random()) ;
-	    
-	    const beep = (value) => { this.emit('bang',value) };
-
-	    const playArpeggio = (start, v, delay) => {
-		let choosen=random(arpeggio.length);
-		let arp = arpeggio[choosen];
-		for(let i=0;i<arp.length;i++){
-		    setTimeout(beep,start+arp[i]*delay,v)
-		}
-	    };
-	    const playTuple = ( start, v) => { for(let i=0;i<v;i++){ setTimeout(beep,start,v) } };
-
-	    for (const [key, value] of Object.entries(bang)) {
-		//console.log(`${key} ${value}`);
-		let k=Number(key);
-		let v=Number(value);
-		if(v==this.teilerArray.length){
-		    playArpeggio(k, v, arpDelay);
-		}else{
-		    playTuple(k,v);
-		}
-	    }
-	} //playBang
-
-	let bang=makePeriod(timeArray);
-	console.log(bang);
-	playBang(bang);
-	let sum=0;
-	timeArray.forEach( (time) => { sum+=time });
-	sum*=2;
-	setTimeout(() => {this.emit('periodended')},sum);
-	return sum;
-    } //playPeriod
-
-
-
-}
-
-class Zyklus extends Period {
-
-    constructor(teilerArray,zyklus){
-	super(teilerArray);
-	this.zyklus=zyklus;
-	this.counter=0;
-	this.playing=false;
-	//console.log(this.phase)
-    }
-
-    setZyklus(zyklus){
-	this.zyklus=zyklus;
-    }
-
-    play(){
-	this.playing=true;
-	this.cycle();
-    }
-
-    stop(){
-	this.playing=false;
-	this.counter=0;
-    }
-
-    pause(){
-	this.playing=false;
-    }
-
-    //private
-    krebs(laenge,index){
-	let ind=index%(2*laenge)
-	if(ind<laenge){
-	    return ind
-	}else{
-	    return 2*laenge-ind-1;
-	}
-    }
-
-    //private 
-    cycle(){
-	if(this.playing){
-	    let index = this.krebs(this.zyklus.length,this.counter);
-	    let time = this.playPeriod(this.zyklus[index]);
-	    this.counter++;
-	    setTimeout(this.cycle,time)
-	}
-    }
-}
-
-
-
 
 function makePhaseTimes2(phases,addArray){
     
-    array=[];
-    for(let i=0;i<addArray.length;i++)array.push(0);
-    for(let i=0;i<addArray.length;i++)array.push(addArray[i]);
+    //let array=[];
+    //for(let i=0;i<addArray.length;i++)array.push(0);
+    //for(let i=0;i<addArray.length;i++)array.push(addArray[i]);
+    let array=addArray;
 
+    
     let p=getPermutations(array)
 
     let ppp=[];
@@ -349,6 +114,7 @@ function makePhaseTimes(addArray){
     return permutations;
 }
 
+*/
 
 // osc pattern output
 //setup osc
@@ -424,45 +190,17 @@ max.on('/unstet/play/period', (message) => {
 ////////////////////////////////params/////////////////////////////////////////////////////
 let teilerArray=[ 1, 2, 3, 5, 8, 13];
  
-let phases   = [ 8000, 13000, 21000, 34000 ];
-let addArray = [ 800,   1600,  2400,  4000 ];
-
-let arpeggio = [
-    [ 0, 1, 2, 3 ],   //kurz
-    [ 0, 1, 2, 4 ],   //halb-kurz
-    [ 0, 2, 3, 4 ],
-    [ 0, 1, 3, 4 ],
-    [ 0, 1, 2, 5 ],   //halb-lang
-    [ 0, 2, 3, 5 ],
-    [ 0, 2, 4, 5 ],
-    [ 0, 3, 4, 5 ],
-    [ 0, 1, 4, 5 ],
-    [ 0, 1, 3, 5 ],
-    [ 0, 2, 4, 6 ],  //lang
-    [ 0, 1, 4, 6 ],
-    [ 0, 1, 4, 6 ],  //ist gleich wie vorher ?
-    [ 0, 2, 3, 6 ],
-    [ 0, 1, 2, 6 ],
-    [ 0, 4, 5, 6 ],
-    [ 0, 1, 5, 6 ],
-    [ 0, 1, 3, 6 ],
-    [ 0, 3, 4, 6 ],
-    [ 0, 3, 5, 6 ]
-];
-
-	
-///////////////////////////////////////////////////////////////////////////////////////////
+let phaseArray   = [ 8000, 13000, 21000, 34000 ];
+//let addArray = [ 800,   1600,  2400,  4000 ];
+let addonArray = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ];
 
 
 
-
-
-
-let phasesTimes=makePhaseTimes2(phases,addArray);
+//let phasesTimes=makePhaseTimes2(phases,addArray);
 
 
 //console.log(phasesTimes);
-
+/*
 let period = new Period(teilerArray);
 
 period.on('bang', (value) => {
@@ -474,11 +212,11 @@ period.on('periodended', (value) => {
     max.send(new OSC.Message('/unstet/periodended'));
 });
 
-period.playPeriod([5,5]);
-
+period.playPeriod([10000,10000]);
+*/
 
 /*
-let zyklus = new Zyklus(teilerArray,phasesTimes);
+let zyklus = new Unstet.Zyklus(teilerArray,phasesTimes);
 
 zyklus.on('bang', (value) => {
     process.stdout.write('\u0007');
@@ -491,6 +229,21 @@ zyklus.on('periodended', (value) => {
 
 zyklus.play();
 */
+
+let unstet = new Unstet.Unstet(teilerArray,phaseArray,addonArray);
+
+unstet.on('bang', (value) => {
+    process.stdout.write('\u0007');
+    osc.send(new OSC.Message('/bang',value ))
+});
+
+unstet.on('periodended', (value) => {
+    max.send(new OSC.Message('/unstet/periodended'));
+});
+
+unstet.play();
+
+
 
 /*
 let len=2*phasesTimes.length;
