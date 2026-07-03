@@ -39,9 +39,9 @@ Install the dpendencies
 * npm (optional)
 * git (optional)
 
-(Hint: for macOS: install [homebrew](https://brew.sh/) and then do `brew install nodejs npm git` or for Android: install [dorynode](https://play.google.com/store/apps/details?id=io.tempage.dorynode) )
+(Hint: for macOS: install [homebrew](https://brew.sh/) and then do `brew install nodejs npm git` or for Android: install [dorynode](https://play.google.com/store/apps/details?id=io.tempage.dorynode) or for Debian do `sudo apt install nodejs npm git`)
 
-Then install unstet:
+Then install unstet (Note: All following snippets can be used unaltered on macOS, Android and Linux!)
 ```bash 
 git clone https://github.com/basilstotz/unstet
 ```
