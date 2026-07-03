@@ -1,6 +1,6 @@
 # Unstet
 
-## System Setup
+## System Outline
 ```
                                                     +------------+
                                                    /|  client 1  |
@@ -39,13 +39,15 @@ Install the dpendencies
 * npm (optional)
 * git (optional)
 
+(Hint: for macOS: install [homebrew](https://brew.sh/) and then do `brew install nodejs npm git` or for Android: install [dorynode](https://play.google.com/store/apps/details?id=io.tempage.dorynode) )
+
 Then install unstet:
 ```bash 
 git clone https://github.com/basilstotz/unstet
 ```
 ### Run
 
-Go to nhe newly install unst folder and start unstet-algo with
+Go to the newly installed unstet folder and start unstet-algo with
 
 ```bash
 cd unstet
@@ -56,6 +58,23 @@ then start unstet-deamon with:
 cd unstet
 node unstet-daemon/unstet-daemon.js &
 ```
+In production it could be usefull to create the file `unstet`:
+```bash
+#!/bin/sh
+cd /path/to/unstet/
+node unstet-algo/unstet-algo.js &
+node unstet-daemon/unstet-daemon.js
+```
+and then do
+```
+cp unstet ~/bin/
+chmod +x ~/bin/unstet
+```
+now you cat start all together just with
+```bash
+unstet
+```
+
 ### Update
 To update the package from Github.com do
 ```bash
