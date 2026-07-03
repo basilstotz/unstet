@@ -1,47 +1,47 @@
 # Unstet
 
-## System Outline
+## Outline
 ```
                                                     +------------+
                                                    /|  client 1  |
                                                   / +------------+
 +------------------+         +-----------------+ /
-|                  |   OSC   |                 |/   +------------+
-|   unstet-algo    | ------->|  unstet-daemon  |----|  client 2  |
+|                  |         |                 |/   +------------+
+|    algorithm     | ------->|     daemon      |----|  client 2  |
 |                  |         |                 |\   +------------+
 +------------------+         +-----------------+ \       ...
                                                   \ +------------+
                                                    \|  client n  |
                                                     +------------+
 ```
-### Unstet-Algo
-Unstet-algo is a reimplementation of the un-stet algorithm (,orginally written in max/msp by Markus Buser). It outputs bangs as OSC-messages to osc://localhost:9000 .
+### Algorithm
+the Unstet algorithm is a javascript reimplementation of the un-stet algorithm (,written in max/msp by Markus Buser). The algorithm just creates events or bangs, it knows nothing about representation on the screen. The bangs are sent as OSC-messages to `osc://localhost:9000`.  
 
-### Unstet-Daemon
-Unstet-daemon is a webserver and a 'chatserver', which enables all participants to communicate with each other.
-* It listens for OSC-messages at osc://localhost:9000
-* It listens for http-connections at http://daemon-host:3000 (daemon-host is the machine the daemon runs on) .
+### Daemon
+* The daemon listens for http-connections at `http://daemon-host:3000` (daemon-host is the machine the daemon runs on) .
+* The demon listens for OSC-messages at `osc://localhost:9000` . On reception of an event it radomly chooses one of the connected clients and the choosen client will randomly select a video to display.
+
 
 ### Clients
 The clients are just any number web-browsers(-tabs) displaying http://daemon-host:3000 . The clients can be dynamically added or removed at any time.
 
-It works on any device/operationgsystem capable running chromium (namely Android-TV, Google-TV ...) and here is no unstet specific installation on the client. 
+It works on any device/operatingsystem capable running chromium (namely Android-TV, Google-TV ...) and here is no unstet specific installation on the client. 
 
-You also might want to setup autologin and autostart for the webbrowser (in fullscreen mode and the correct url).
+You also might want to setup things like autologin and autostart for the webbrowser (in fullscreen mode and the correct url).
 
 ## Usage
 
 ### Installation
-The system can be installed on any device/operationgsystem capable running nodejs (namely Android, Linux, Windows, macOS). 
+The algorithm and the daemon can be installed on any device/operationgsystem capable running nodejs (namely Android, Linux, Windows, macOS). 
 
-Install the dpendencies
-* nodejs
-* npm (optional)
-* git (optional)
+First nstall the dpendencies: nodejs, npm (optional), git (optional)
 
-(Hint: for macOS: install [homebrew](https://brew.sh/) and then do `brew install nodejs npm git` or for Android: install [dorynode](https://play.google.com/store/apps/details?id=io.tempage.dorynode) or for Debian do `sudo apt install nodejs npm git`)
+Hint: **macOS:** install [homebrew](https://brew.sh/) and then do `brew install nodejs npm git` 
+**| Android:** install [dorynode](https://play.google.com/store/apps/details?id=io.tempage.dorynode) (easy) or [termux](https://play.google.com/store/search?q=termux&c=apps) (complete)
+**| Debian:** do`sudo apt install nodejs npm git`.
 
 Then install unstet (Note: All following snippets can be used unaltered on macOS, Android and Linux!)
+
 ```bash 
 git clone https://github.com/basilstotz/unstet
 ```
