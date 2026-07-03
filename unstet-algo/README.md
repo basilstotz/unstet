@@ -1,7 +1,7 @@
-# unstet class
+# Unstet Class
 
 Basic setup:
-```
+```javascript
 #!/usr/bin/env node                                                                                    
 const Unstet = require('./unstet.js').Unstet;
 
@@ -20,7 +20,7 @@ unstet.play();
 ```
 This is a fully functional version with OSC-output:
 
-```
+```javascript
 #!/usr/bin/env node                                                                                    
 const Unstet = require('./unstet.js').Unstet;
 const OSC = require('osc-js');
