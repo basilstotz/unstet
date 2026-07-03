@@ -29,29 +29,6 @@ It works on any device/operationgsystem capable running chromium (namely Android
 
 You also might want to setup autologin and autostart for the webbrowser (in fullscreen mode and the correct url).
 
-
-#### Client Specific Hints
-##### Rasperry PI 
-
-To hide the mouse pointer install *unclutter*:
-```
-sudo apt install unclutter
-```
-then remove the screensave from systemwide lxsession-autostart: `/etc/xdg/lxsession/LXDE-pi/autostart`:
-```
-@lxpanel --profile LXDE-pi
-@pcmanfm --desktop --profile LXDE-pi
-#@xscreensaver -no-splash                                       #<------ add a leading #
-@xset s noblanc
-@xset s off
-@xset s -dpms
-```
-
-You also might want to increase the GPU-memory to 256 Mb in case the videos are laging. See 
-https://www.elektronik-kompendium.de/sites/raspberry-pi/2002121.htm for details
-
-No sound on HDMI? As simple as right click on the speaker and change it to hdmi. 
-
 ## Usage
 
 ### Installation
@@ -85,6 +62,29 @@ To update the package from Github.com do
 cd unstet
 git pull origin
 ```
+
+## Client Specific Hints
+### Rasperry PI 
+
+To hide the mouse pointer install *unclutter*:
+```
+sudo apt install unclutter
+```
+then remove the screensave from systemwide lxsession-autostart: `/etc/xdg/lxsession/LXDE-pi/autostart`:
+```
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+#@xscreensaver -no-splash                                       #<------ add a leading #
+@xset s noblanc
+@xset s off
+@xset s -dpms
+```
+
+You also might want to increase the GPU-memory to 256 Mb in case the videos are laging. See 
+https://www.elektronik-kompendium.de/sites/raspberry-pi/2002121.htm for details
+
+No sound on HDMI? As simple as right click on the speaker and change it to hdmi. 
+
 
 
 
