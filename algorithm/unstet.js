@@ -203,6 +203,7 @@ class Period extends Phase {
     
     constructor(teilerArray){
 	super(teilerArray);
+	this.playSpeed = 1.0;
 	//this.phase= new Phase(teilerArray);
 	//console.log(this.phase)
 	//this.events= new EventEmitter();
@@ -217,8 +218,8 @@ class Period extends Phase {
 
 	//console.log("ta ",timeArray);
 	
-        let phase=this.phase;
-	let events=this.events;
+        //let phase=this.phase;
+	//let events=this.events;
 	
 	const makePeriod = (timeArray) => {
 	    let bang={};
@@ -242,11 +243,12 @@ class Period extends Phase {
 	    //add krebs
 	    for (const [key, value] of Object.entries(bang)) {
 		let k=Number(key);
-		if(k!=0){
+		//if(k!=0){
 		    let t=2*current-k
 		    bang[t]=Number(value);
-		}
+		//}
 	    }
+	    //contains the last (unplyaed) item!!!
 	    return bang;
 	} //makePeriod
 
@@ -266,7 +268,26 @@ class Period extends Phase {
 	    };
 	    const playTuple = ( start, v) => { for(let i=0;i<v;i++){ setTimeout(beep,start,v) } };
 
-	    for (const [key, value] of Object.entries(bang)) {
+	    const bangArray = Object.entries(bang);
+
+	    // all, but the last!!
+	    for(let i=0;i<bangArray.length-1;i++){
+		const [ key,value ] = bangArray[i];
+
+		let k=Number(key)*this.playSpeed;
+		let v=Number(value);
+		if(v==this.teilerArray.length){
+		    playArpeggio(k, v, arpDelay);
+		}else{
+		    playTuple(k,v);
+		}
+	    }
+	    //handle the last
+	    const [ key,value ] = bangArray[bangArray.length-1];
+	    return key*this.playSpeed; // =full time
+
+	    /*
+	    for (const [key, value] of ) {
 		//console.log(`${key} ${value}`);
 		let k=Number(key);
 		let v=Number(value);
@@ -276,16 +297,23 @@ class Period extends Phase {
 		    playTuple(k,v);
 		}
 	    }
+            */
 	} //playBang
 
 	let bang=makePeriod(timeArray);
-	console.log(bang);
+	//console.log(bang);
+	let periodTiime = playBang(bang);
+
+	/*
 	playBang(bang);
 	let sum=0;
 	timeArray.forEach( (time) => { sum+=time });
 	sum*=2;
-	setTimeout(() => {this.emit('periodended')},sum);
-	return sum;
+	*/
+
+	//not went to zyklus !
+	setTimeout(() => {this.emit('periodended')},periodTime);
+	return periodTime;
     } //playPeriod
 
 }
@@ -324,6 +352,7 @@ class Zyklus extends Period {
     //private 
     cycle(){
 	if(this.playing){
+	    //this.emit('period');
 	    let index = krebs(this.zyklus.length,this.counter);
 	    let time = this.playPeriod(this.zyklus[index]);
 	    this.counter++;
