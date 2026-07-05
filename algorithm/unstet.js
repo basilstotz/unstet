@@ -388,14 +388,29 @@ class Unstet extends Zyklus {
 
     constructor(teilerArray,phaseArray,addonArray){
 	super(teilerArray,[]);
-	let zyklus = this.calcZyklus(phaseArray,addonArray);
-	this.setZyklus(zyklus);
+	this.setZyklus(phaseArray,addonArray);
+	//this.phaseArray = phaseArray;
+	//this.addonArray = addonArray;
+	//let zyklus = this.calcZyklus(this.phaseArray,this.addonArray);
+	//this.setZyklus(zyklus);
     }
 
-    makeZyklus(phaseArray,addonArray){
-	let zyklus=calcZylus(phaseArray,addonArray)
-	this.setZyklus(zyklus);
+    setZyklus(phaseArray,addonArray){
+	this.phaseArray = phaseArray;
+	this.addonArray = addonArray;
+	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
     }
+
+    setPeriode(phaseArray){
+	this.phaseArray = phaseArray;
+	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
+    }
+    
+    setVariation(addonArray){
+	this.addonArray = addonArray;
+	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
+    }
+    
     
     //private
     calcZyklus(phaseArray,addonArray){
