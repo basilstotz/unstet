@@ -4,6 +4,10 @@
 //let phases   = [ 8000, 13000, 21000, 34000 ];
 //let addArray = [ 800,   1600,  2400,  4000 ];
 
+const STOP = 0;
+const PAUSE = 1;
+const PLAY = 2;
+
 let arpeggio = [
     [ 0, 1, 2, 3 ],   //kurz
     [ 0, 1, 2, 4 ],   //halb-kurz
@@ -214,7 +218,7 @@ class Period extends Phase {
 	this.setTeiler(teilerArray);
     }
 
-    playPeriod(timeArray){
+    emitPeriod(timeArray){
 
 	//console.log("ta ",timeArray);
 	
@@ -252,69 +256,61 @@ class Period extends Phase {
 	    return bang;
 	} //makePeriod
 
-	const playBang = (bang) => {
-	    
+	const emitBang = ( value ) => {
+
 	    const arpDelay = 30;
-	    const random = laenge => Math.floor(laenge*Math.random()) ;
 	    
 	    const beep = (value) => { this.emit('bang',value) };
 
-	    const playArpeggio = (start, v, delay) => {
+	    const emitArpeggio = (start, value, delay) => {
+
+		const random = laenge => Math.floor(laenge*Math.random()) ;
 		let choosen=random(arpeggio.length);
 		let arp = arpeggio[choosen];
+		
 		for(let i=0;i<arp.length;i++){
-		    setTimeout(beep,start+arp[i]*delay,v)
+		    setTimeout(beep,start+arp[i]*delay,value)
 		}
 	    };
-	    const playTuple = ( start, v) => { for(let i=0;i<v;i++){ setTimeout(beep,start,v) } };
 
+	    const emitTuple = ( start, value) => { for(let i=0;i<value;i++){ setTimeout(beep,start,value) } };
+
+	    let max=this.teilerArray.length
+	    this.emit('rawbang',value,max);
+
+	    if(value==max){
+		emitArpeggio(0, value, arpDelay);
+	    }else{
+		emitTuple(0,value);
+	    }
+	};
+	
+	const playBang = (bang) => {
+	    
 	    const bangArray = Object.entries(bang);
 
 	    // all, but the last!!
 	    for(let i=0;i<bangArray.length-1;i++){
 		const [ key,value ] = bangArray[i];
 
-		let k=Number(key)*this.playSpeed;
+		let k=Math.round(Number(key)*this.playSpeed);
 		let v=Number(value);
-		if(v==this.teilerArray.length){
-		    playArpeggio(k, v, arpDelay);
-		}else{
-		    playTuple(k,v);
-		}
+
+		setTimeout(emitBang,k,v);
 	    }
 	    //handle the last
 	    const [ key,value ] = bangArray[bangArray.length-1];
-	    return key*this.playSpeed; // =full time
+	    return Math.round(key*this.playSpeed); // =full time
 
-	    /*
-	    for (const [key, value] of ) {
-		//console.log(`${key} ${value}`);
-		let k=Number(key);
-		let v=Number(value);
-		if(v==this.teilerArray.length){
-		    playArpeggio(k, v, arpDelay);
-		}else{
-		    playTuple(k,v);
-		}
-	    }
-            */
 	} //playBang
 
 	let bang=makePeriod(timeArray);
 	//console.log(bang);
-	let periodTiime = playBang(bang);
-
-	/*
-	playBang(bang);
-	let sum=0;
-	timeArray.forEach( (time) => { sum+=time });
-	sum*=2;
-	*/
-
-	//not went to zyklus !
+	let periodTime = playBang(bang);
+	
 	setTimeout(() => {this.emit('periodended')},periodTime);
 	return periodTime;
-    } //playPeriod
+    } //emitPeriod
 
 }
 
@@ -326,6 +322,7 @@ class Zyklus extends Period {
 	super(teilerArray);
 	this.zyklus=zyklus;
 	this.counter=0;
+	this.playCommand = STOP;
 	this.playing=false;
 	//console.log(this.phase)
     }
@@ -335,28 +332,54 @@ class Zyklus extends Period {
     }
 
     play(){
-	this.playing=true;
-	this.cycle();
+	this.playCommand = PLAY;
+	if(!this.playing){
+	    this.playing=true;
+	    this.emit('playstart');
+	    this.cycle(this);
+	}
     }
 
     stop(){
+	this.playCommand = STOP;
+	/*
 	this.playing=false;
 	this.counter=0;
+        */
     }
 
     pause(){
+	this.playCommand = PAUSE;
+	/*
 	this.playing=false;
+        */
     }
 
 
     //private 
-    cycle(){
-	if(this.playing){
-	    //this.emit('period');
-	    let index = krebs(this.zyklus.length,this.counter);
-	    let time = this.playPeriod(this.zyklus[index]);
-	    this.counter++;
-	    setTimeout(this.cycle,time)
+    cycle(that){
+	if(that.playCommand == PLAY){
+	    console.log("play");
+	    let index = krebs(that.zyklus.length,that.counter);
+	    //console.log(that.counter,that.zyklus[index]);
+	    let playTime = that.emitPeriod(that.zyklus[index]);
+	    console.log(that.counter,playTime,that.zyklus[index]);
+
+	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 )that.emit('zyklusend');
+
+	    that.counter++;
+	    
+	    //setTimeout(()=>{that.cycle},playTime)
+	    setTimeout(that.cycle,playTime,that)
+	}else{
+	    console.log("stop or pause");
+	    if(that.playCommand == STOP){
+		that.playing = false;
+		that.counter = 0;
+	    }else{ //PAUSE
+		that.playing = false;
+	    }
+	    that.emit('playend');
 	}
     }
 }
@@ -392,12 +415,14 @@ class Unstet extends Zyklus {
 	
 	let zyklus=reducedPermutations(addonArray,phaseArray.length);
 	// maybe add a zero-vector at beginn
+	/*
 	if(isNotZero(addonArray) && isNotZero(zyklus[0])){
 	    let zero=[];
 	    for(let i=0;i<zyklus[0].length;i++)zero.push(0);
 	    for(let i=zyklus.length-1;i>=0;i--)zyklus[i+1]=zyklus[i];
 	    zyklus[0]=zero;
-	}   
+	} 
+        */  
 	//add grundzeit
 	for(let i=0;i<zyklus.length;i++){
 	    let line=zyklus[i];
