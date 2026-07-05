@@ -17,6 +17,11 @@
 ### Algorithm
 the Unstet algorithm is a javascript reimplementation of the un-stet algorithm (,written in max/msp by Markus Buser). The algorithm just creates events or bangs, it knows nothing about representation on the screen. The bangs are sent as OSC-messages to `osc://localhost:9000`.  
 
+#### Puredata/Max Integration
+
+<img width="571" height="447" alt="grafik" src="https://github.com/user-attachments/assets/5953c6f4-539a-4d25-a025-b55f637bbb63" />
+
+
 ### Daemon
 * The daemon listens for http-connections at `http://daemon-host:3000` (daemon-host is the machine the daemon runs on) .
 * The demon listens for OSC-messages at `osc://localhost:9000` . On reception of an event it radomly chooses one of the connected clients and the choosen client will randomly select a video to display.
