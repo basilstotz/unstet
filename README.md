@@ -21,6 +21,7 @@ the Unstet algorithm is a javascript reimplementation of the un-stet algorithm (
 
 <img width="571" height="447" alt="grafik" src="https://github.com/user-attachments/assets/5953c6f4-539a-4d25-a025-b55f637bbb63" />
 
+for details see https://github.com/basilstotz/unstet/tree/main/algorithm/integrations/puredata
 
 ### Daemon
 * The daemon listens for http-connections at `http://daemon-host:3000` (daemon-host is the machine the daemon runs on) .
