@@ -1,9 +1,9 @@
 {
-  "name": "pattern",
+  "name": "unstet",
   "version": "1.0.0",
-  "description": "unstet-pattern with osc output",
-    "main": "pattern2.js",
-    "bin": { "unstet": "pattern2.js" },
+  "description": "unstet with osc output",
+    "main": "index.js",
+    "bin": { "unstet": "index.js" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

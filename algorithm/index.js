@@ -62,9 +62,9 @@ unstet.on( 'playstop', () => { sendOSC('/playstop')});
 osc.on('/play', () => { unstet.play() });
 osc.on('/stop', () => { unstet.stop() });
 osc.on('/pause', () => { unstet.pause() });
-osc.on('/teiler', (...args) => { unstet.setTeiler(args) };
-osc.on('/periode', (...args) => { unstet.setPeriode(args) };
-osc.on('/variation', (...args) => { unstet.setVariation(args) };
+osc.on('/teiler', (message) => { unstet.setTeiler(message.args) });
+osc.on('/periode', (message) => { unstet.setPeriode(message.args) });
+osc.on('/variation', (message) => { unstet.setVariation(message.args) });
 
 
 if(autoplay)unstet.play()

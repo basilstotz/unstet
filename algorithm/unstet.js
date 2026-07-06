@@ -154,6 +154,7 @@ class Phase extends EventEmitter {
     }
 
     setTeiler(teilerArray){
+	console.log("setTeiler ",teilerArray);	
 	this.teilerArray = teilerArray;	
 	this.phasePrototype = this.makePhasePrototype(teilerArray);
     }
@@ -214,10 +215,12 @@ class Period extends Phase {
 	//this.gaga="gaga";
     }
 
+    /*
     setTeiler(teilerArray){
 	this.setTeiler(teilerArray);
     }
-
+    */
+    
     emitPeriod(timeArray){
 
 	//console.log("ta ",timeArray);
@@ -332,6 +335,7 @@ class Zyklus extends Period {
     }
 
     play(){
+	console.log("play")
 	this.playCommand = PLAY;
 	if(!this.playing){
 	    this.playing=true;
@@ -341,6 +345,7 @@ class Zyklus extends Period {
     }
 
     stop(){
+	console.log("stop")
 	this.playCommand = STOP;
 	/*
 	this.playing=false;
@@ -349,6 +354,7 @@ class Zyklus extends Period {
     }
 
     pause(){
+	console.log("pause")	
 	this.playCommand = PAUSE;
 	/*
 	this.playing=false;
@@ -398,17 +404,19 @@ class Unstet extends Zyklus {
     setZyklus(phaseArray,addonArray){
 	this.phaseArray = phaseArray;
 	this.addonArray = addonArray;
-	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
+	this.zyklus = this.calcZyklus(this.phaseArray,this.addonArray)
     }
 
     setPeriode(phaseArray){
+	console.log("setPeriode ",phaseArray);
 	this.phaseArray = phaseArray;
-	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
+	this.zyklus = this.calcZyklus(this.phaseArray,this.addonArray)
     }
     
     setVariation(addonArray){
+	console.log("setVariation ",addonArray);
 	this.addonArray = addonArray;
-	this.zyklus = this.calcZylus(this.phaseArray,this.addonArray)
+	this.zyklus = this.calcZyklus(this.phaseArray,this.addonArray)
     }
     
     
