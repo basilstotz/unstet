@@ -23,12 +23,14 @@ the Unstet algorithm is a javascript reimplementation of the un-stet algorithm (
 
 for details see https://github.com/basilstotz/unstet/tree/main/algorithm/integrations/puredata
 
-### Daemon
+### Presenter
+
+#### Daemon
 * The daemon listens for http-connections at `http://daemon-host:3000` (daemon-host is the machine the daemon runs on) .
 * The demon listens for OSC-messages at `osc://localhost:9000` . On reception of an event it radomly chooses one of the connected clients and the choosen client will randomly select a video to display.
 
 
-### Clients
+#### Clients
 The clients are just any number web-browsers(-tabs) displaying http://daemon-host:3000 . The clients can be dynamically added or removed at any time.
 
 It works on any device/operatingsystem capable running chromium (namely Android-TV, Google-TV ...) and here is no unstet specific installation on the client. 
