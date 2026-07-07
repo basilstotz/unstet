@@ -270,13 +270,17 @@ class Period extends Phase {
 		const random = laenge => Math.floor(laenge*Math.random()) ;
 		let choosen=random(arpeggio.length);
 		let arp = arpeggio[choosen];
-		
+
+		this.emit('arpeggio');
 		for(let i=0;i<arp.length;i++){
 		    setTimeout(beep,start+arp[i]*delay,value)
 		}
 	    };
 
-	    const emitTuple = ( start, value) => { for(let i=0;i<value;i++){ setTimeout(beep,start,value) } };
+	    const emitTuple = ( start, value) => {
+		this.emit('simple');
+		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
+	    };
 
 	    let max=this.teilerArray.length
 	    this.emit('rawbang',value,max);

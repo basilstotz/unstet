@@ -53,10 +53,14 @@ setInterval( () => { sendOSC('/hello',myIP,port+1) },5000);
 
 // send bangs
 unstet.on( 'bang', () => { sendOSC('/bang')});
-unstet.on( 'rawbang', (value, max ) => { sendOSC('rawbang',value, max )});
+unstet.on( 'simple', () => { sendOSC('/simple')});
+unstet.on( 'arpeggio', () => { sendOSC('/arpeggio')});
 unstet.on( 'periodended', () => { sendOSC('/periodend')});
+unstet.on( 'zyklusended', () => { sendOSC('/zyklusendend')});
 unstet.on( 'playstart', () => { sendOSC('/playstart')});
 unstet.on( 'playstop', () => { sendOSC('/playstop')});
+//send message
+unstet.on( 'rawbang', (value, max ) => { sendOSC('/rawbang',value, max )});
 
 // receive commands
 osc.on('/play', () => { unstet.play() });
