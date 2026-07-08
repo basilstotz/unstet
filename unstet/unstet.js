@@ -282,7 +282,7 @@ class Period extends Phase {
 		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
 	    };
 
-	    let max=this.teilerArray.length
+	    let max=this.teilerLength
 	    this.emit('rawbang',value,max);
 
 	    if(value==max){
@@ -312,10 +312,11 @@ class Period extends Phase {
 	} //playBang
 
 	let bang=makePeriod(timeArray);
+	this.teilerLength = this.teilerArray.length;
 	//console.log(bang);
 	let periodTime = playBang(bang);
 	
-	setTimeout(() => {this.emit('periodended')},periodTime);
+	setTimeout(() => {this.emit('periodend')},periodTime);
 	return periodTime;
     } //emitPeriod
 
