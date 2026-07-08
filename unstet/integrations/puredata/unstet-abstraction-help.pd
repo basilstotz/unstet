@@ -1,82 +1,156 @@
-#N canvas 689 357 600 440 12;
-#X msg 150 141 connect localhost 9001;
-#X msg 472 142 play;
-#X msg 426 141 stop;
-#X msg 372 142 pause;
-#X msg 363 69 teiler 1 2 3 5 8 13;
-#X msg 368 107 periode 8 13 21 34;
-#X msg 359 30 variation 0.8 1.6 2.4 4;
-#X msg 39 146 listen 9000;
-#X obj 273 319 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#N canvas 775 126 958 901 12;
+#X msg 280 501 connect localhost 9001;
+#X msg 211 381 play;
+#X msg 212 347 stop;
+#X msg 206 314 pause;
+#X msg 281 535 listen 9000;
+#X obj 250 631 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 245 324 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 153 631 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 194 323 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 34 632 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 331 631 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 307 321 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+#X obj 430 631 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
-#X obj 345 317 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#N canvas 86 303 553 503 sound 0;
+#N canvas 46 331 354 414 sound 0;
 #X obj 121 18 inlet;
-#X obj 30 184 vline~;
-#X obj 19 310 dac~;
-#X obj 28 235 *~;
-#X obj 29 274 *~;
-#X obj 121 54 bng 20 250 50 0 empty empty empty 0 -10 0 12 -262144
+#X obj 34 122 vline~;
+#X obj 21 332 dac~;
+#X obj 31 263 *~;
+#X obj 121 53 bng 20 250 50 0 empty empty empty 0 -10 0 12 -262144
 -1 -1;
 #X obj 160 92 random 12;
-#X obj 94 221 mtof;
-#X obj 91 253 osc~;
-#X floatatom 350 313 5 0 0 0 - - -;
-#X msg 351 260 0.5;
-#X obj 343 219 loadbang;
-#X msg 31 132 1 30 \, 0 100 300;
-#X obj 367 14 inlet;
-#X obj 366 47 bng 20 250 50 0 empty empty empty 0 -10 0 12 -262144
+#X obj 156 193 mtof;
+#X obj 153 224 osc~;
+#X msg 35 92 1 30 \, 0 100 300;
+#X obj 256 16 inlet;
+#X obj 255 49 bng 20 250 50 0 empty empty empty 0 -10 0 12 -262144
 -1 -1;
-#X obj 363 82 random 3;
-#X obj 357 128 * 5;
-#X floatatom 357 153 5 0 0 0 - - -;
-#X obj 94 246;
-#X obj 164 181 +;
-#X obj 180 134 + 50;
-#X connect 0 0 5 0;
+#X obj 255 90 random 3;
+#X obj 254 118 * 5;
+#X floatatom 253 147 5 0 0 0 - - -;
+#X obj 161 158 +;
+#X obj 160 124 + 50;
+#X obj 31 296 *~ 0.2;
+#X connect 0 0 4 0;
 #X connect 1 0 3 0;
-#X connect 3 0 4 0;
-#X connect 4 0 2 0;
-#X connect 4 0 2 1;
-#X connect 5 0 12 0;
-#X connect 5 0 6 0;
-#X connect 6 0 20 0;
-#X connect 7 0 8 0;
-#X connect 7 0 18 0;
-#X connect 8 0 3 1;
-#X connect 9 0 4 1;
-#X connect 10 0 9 0;
-#X connect 11 0 10 0;
-#X connect 12 0 1 0;
-#X connect 13 0 14 0;
-#X connect 14 0 15 0;
-#X connect 15 0 16 0;
-#X connect 16 0 17 0;
-#X connect 17 0 19 1;
-#X connect 19 0 7 0;
-#X connect 20 0 19 0;
-#X restore 203 375 pd sound;
-#X obj 197 243 unstet-abstraction;
-#X connect 0 0 14 1;
-#X connect 1 0 14 2;
-#X connect 2 0 14 2;
-#X connect 3 0 14 2;
-#X connect 4 0 14 2;
-#X connect 5 0 14 2;
-#X connect 6 0 14 2;
-#X connect 7 0 14 0;
-#X connect 9 0 13 1;
-#X connect 10 0 13 0;
-#X connect 14 0 10 0;
-#X connect 14 1 9 0;
-#X connect 14 2 8 0;
-#X connect 14 3 11 0;
-#X connect 14 4 12 0;
+#X connect 3 0 16 0;
+#X connect 4 0 8 0;
+#X connect 4 0 5 0;
+#X connect 5 0 15 0;
+#X connect 6 0 7 0;
+#X connect 7 0 3 1;
+#X connect 8 0 1 0;
+#X connect 9 0 10 0;
+#X connect 10 0 11 0;
+#X connect 11 0 12 0;
+#X connect 12 0 13 0;
+#X connect 13 0 14 1;
+#X connect 14 0 6 0;
+#X connect 15 0 14 0;
+#X connect 16 0 2 0;
+#X connect 16 0 2 1;
+#X restore 49 801 pd sound;
+#X obj 134 559 unstet-abstraction;
+#X msg 105 249 teiler 2 3 5 8;
+#X msg 59 199 variation 800 1600 2400 4000;
+#X msg 5 146 periode 8000 13000 21000 34000;
+#X text 261 309 These 3 messages control the excution of the unstet
+process. The play message is applied imeadately \, the stop and pause
+is applied only at the the of a period. Normaly these messages are
+not needed \, as the unstat process starts playing automatically. You
+can prevent this by starting the process as "unstet -n".;
+#X text 25 646 bang;
+#X text 225 650 periodend;
+#X text 300 647 zuklusend;
+#X text 408 647 playstart;
+#X text 482 648 playstop;
+#X text 653 722 rawbang;
+#X text 456 500 When Pd and unstet run on the same computer \, these
+messages are not needed \, as the defaults are ok. When they are on
+different computers \, replace *localhost" with the IP of the computer
+running unstet and send the connect message.;
+#X text 645 740 (i.e. bangs w/o ornaments);
+#X text 61 57 The unstet-abraction receives (several) bangs form a
+running unstet process \, and can optionaly alter the process parameters
+or can control the execution of the process. The unstet process should
+be startet bevor the Pd process with the command "unstet".;
+#X text 24 15 [unstet-abstraction]- integrates external unstet process
+;
+#X msg 76 222 variation 0 0 0 0 800 1600 2400 4000;
+#X msg 123 273 teiler 2 3 5 8 13;
+#X msg 29 171 periode 5000 5000 13000;
+#X text 508 55 The messages "periode" \, "variation" and "teiler" alter
+the default parameters in a unstet process. When your happy with the
+defaults there is no need to use these messages. You can use these
+messages anytime \, but the changes are applied only at the end of
+a period.;
+#X text 279 280 The "teiler" can any have length.;
+#X obj 88 633 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 128 646 arpeggio;
+#X obj 603 589 list prepend set;
+#X msg 606 695 rawbang 1 6;
+#X obj 604 653 trigger b a];
+#X obj 607 736 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 604 622 list trim;
+#X obj 504 632 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X text 74 647 simple;
+#X text 437 584 outputs message;
+#X text 92 674 output;
+#X text 275 676 structure;
+#X text 454 675 status;
+#X msg 243 798 oscsend localhost 8000 /max/simple;
+#X text 26 781 minimal synth output;
+#X text 177 744 Some examples for usage of bangs:;
+#X msg 513 798 oscsend localhost 8000 /max/arpeggio;
+#X obj 449 836 send data;
+#X obj 181 498 receive data;
+#X msg 279 474 oscsend localhost 10000 /gaga/uhu 200 100 miau;
+#X text 276 408 [oscsend <host> <port> </address> <arg1> <arg2> ...
+<argn>( Independent utility method for sending any osc-messages to
+any host and any port. Every call can have different host/ports/address/args!
+;
+#X text 362 190 The "variation" is a time added to the period. For
+a Zyklus it calculates all possible permutations. THe variation must
+be equal or longer as the period. When the variation is longer than
+the period \, the permutations trucated to the length of the period
+\, then all unique perms are taken.;
+#X text 365 775 resend as osc to an other client/port/address;
+#X text 238 154 The "period" can have any length!;
+#X connect 0 0 11 1;
+#X connect 1 0 11 0;
+#X connect 2 0 11 0;
+#X connect 3 0 11 0;
+#X connect 4 0 11 1;
+#X connect 5 0 10 1;
+#X connect 6 0 47 0;
+#X connect 7 0 10 0;
+#X connect 11 0 7 0;
+#X connect 11 1 31 0;
+#X connect 11 2 6 0;
+#X connect 11 3 5 0;
+#X connect 11 4 8 0;
+#X connect 11 5 9 0;
+#X connect 11 6 38 0;
+#X connect 11 7 33 0;
+#X connect 12 0 11 0;
+#X connect 13 0 11 0;
+#X connect 14 0 11 0;
+#X connect 26 0 11 0;
+#X connect 27 0 11 0;
+#X connect 28 0 11 0;
+#X connect 31 0 44 0;
+#X connect 33 0 37 0;
+#X connect 34 0 36 0;
+#X connect 35 0 34 0;
+#X connect 35 1 34 0;
+#X connect 37 0 35 0;
+#X connect 44 0 48 0;
+#X connect 47 0 48 0;
+#X connect 49 0 11 1;
+#X connect 50 0 11 1;
