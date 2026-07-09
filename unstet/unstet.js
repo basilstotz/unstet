@@ -162,9 +162,11 @@ class Phase extends EventEmitter {
     getPhase(length){
 	let bang={};
 	let factor=length/10000.0;
-	//XSconsole.log("lf ",length,factor)
+	//console.log("lf ",length,factor)
 	for (const [key, value] of Object.entries(this.phasePrototype)) {
 	    let newtime=Math.round(key*factor);
+	    let newvalue=value;
+	    for(let i=2;i<7;i++)newvalue[i]=Math.random();
 	    //console.log(key,newtime,value);
 	    bang[newtime]=value
 	}
@@ -188,9 +190,13 @@ class Phase extends EventEmitter {
 		let roundTime=Math.round(time);
 		let b=bang[roundTime];
 		if(b){
-		    bang[roundTime]=b+1;
+		    b[0]=b[0]+1;
+		    //bang[roundTime]=b+1;
 		}else{
-		    bang[roundTime]=1
+		    bang[roundTime]=[];
+		    bang[roundTime].push(1);
+		    bang[roundTime].push(teilerArray.length);
+		    //bang[roundTime]=1
 		}
 		time+=delta;
 	    }
@@ -209,24 +215,9 @@ class Period extends Phase {
     constructor(teilerArray){
 	super(teilerArray);
 	this.playSpeed = 1.0;
-	//this.phase= new Phase(teilerArray);
-	//console.log(this.phase)
-	//this.events= new EventEmitter();
-	//this.gaga="gaga";
     }
-
-    /*
-    setTeiler(teilerArray){
-	this.setTeiler(teilerArray);
-    }
-    */
     
     emitPeriod(timeArray){
-
-	//console.log("ta ",timeArray);
-	
-        //let phase=this.phase;
-	//let events=this.events;
 	
 	const makePeriod = (timeArray) => {
 	    let bang={};
@@ -242,8 +233,8 @@ class Period extends Phase {
 		//console.log("bang",b);
 		//console.log(b);
 		for (const [key, value] of Object.entries(b)) {
-		    let t=Number(current)+Number(key);
-		    bang[t]=Number(value);
+		    let t=current+Number(key);
+		    bang[t]=value;
 		}
 		current+=time;
 	    }
@@ -252,7 +243,7 @@ class Period extends Phase {
 		let k=Number(key);
 		//if(k!=0){
 		    let t=2*current-k
-		    bang[t]=Number(value);
+		    bang[t]=value;
 		//}
 	    }
 	    //contains the last (unplyaed) item!!!
@@ -282,13 +273,12 @@ class Period extends Phase {
 		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
 	    };
 
-	    let max=this.teilerLength
-	    this.emit('rawbang',value,max);
+	    this.emit('rawbang',value );
 
-	    if(value==max){
-		emitArpeggio(0, value, arpDelay);
+	    if(value[0]==value[1]){
+		emitArpeggio(0, value[0], arpDelay);
 	    }else{
-		emitTuple(0,value);
+		emitTuple(0,value[0]);
 	    }
 	};
 	
@@ -301,7 +291,7 @@ class Period extends Phase {
 		const [ key,value ] = bangArray[i];
 
 		let k=Math.round(Number(key)*this.playSpeed);
-		let v=Number(value);
+		let v=value;
 
 		setTimeout(emitBang,k,v);
 	    }

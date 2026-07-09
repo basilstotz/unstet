@@ -59,8 +59,13 @@ unstet.on( 'periodend', () => { sendOSC('/periodend')});
 unstet.on( 'zyklusend', () => { sendOSC('/zyklusendend')});
 unstet.on( 'playstart', () => { sendOSC('/playstart')});
 unstet.on( 'playstop', () => { sendOSC('/playstop')});
-//send message
-unstet.on( 'rawbang', (value, max ) => { sendOSC('/rawbang',value, max )});
+//send rawbang message
+unstet.on( 'rawbang', (value) => {
+    let message=new OSC.Message('/rawbang');
+    for(let i=0;i<value.length;i++)message.add(value[i]);
+    osc.send(message,{host: host, port: port});
+});
+
 
 // receive commands
 osc.on('/play', () => { unstet.play() });
