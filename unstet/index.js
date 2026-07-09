@@ -75,6 +75,16 @@ osc.on('/teiler', (message) => { unstet.setTeiler(message.args) });
 osc.on('/periode', (message) => { unstet.setPeriode(message.args) });
 osc.on('/variation', (message) => { unstet.setVariation(message.args) });
 
+//utility sendosc( host, port, address, ...args )
+osc.on('/sendosc', (message) => {
+    let args=message.args;
+    let host=args[0];
+    let port=args[1];
+    let address=args[2];
+    let msg = new OSC.Message(address);
+    for(let i=3;i<args.length;i++)msg.add(args[i]);
+    osc.send(msg, { host: host, port: port } );
+});
 
 if(autoplay)unstet.play()
 
