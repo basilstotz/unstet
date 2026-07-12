@@ -8,6 +8,10 @@ const STOP = 0;
 const PAUSE = 1;
 const PLAY = 2;
 
+const ORNAMENT = 0;
+const SIMPLE = 1;
+const ARPEGGIO = 2;
+
 let arpeggio = [
     [ 0, 1, 2, 3 ],   //kurz
     [ 0, 1, 2, 4 ],   //halb-kurz
@@ -165,8 +169,8 @@ class Phase extends EventEmitter {
 	//console.log("lf ",length,factor)
 	for (const [key, value] of Object.entries(this.phasePrototype)) {
 	    let newtime=Math.round(key*factor);
-	    let newvalue=value;
-	    for(let i=2;i<7;i++)newvalue[i]=Math.random();
+	    //let newvalue=value;
+	    //for(let i=2;i<7;i++)newvalue[i]=Math.random();
 	    //console.log(key,newtime,value);
 	    bang[newtime]=value
 	}
@@ -180,7 +184,6 @@ class Phase extends EventEmitter {
 
 	//this.teilerArray=teilerArry;
 	
-	//let maxTime=0;
 	//for all teiler do
 	for(let i=0;i<teilerArray.length;i++){
 	    let teiler=teilerArray[i];
@@ -188,22 +191,20 @@ class Phase extends EventEmitter {
 	    let time=0;
 	    for(let j=0;j<teiler;j++){
 		let roundTime=Math.round(time);
-		let b=bang[roundTime];
+		let b=bang[Number(roundTime)];
 		if(b){
 		    b[0]=b[0]+1;
-		    //bang[roundTime]=b+1;
 		}else{
 		    bang[roundTime]=[];
 		    bang[roundTime].push(1);
 		    bang[roundTime].push(teilerArray.length);
-		    //bang[roundTime]=1
 		}
 		time+=delta;
 	    }
-	    //if(time>maxTime)maxTime=time;
 	}
-	//console.log(maxTime);
+	//console.log(bang)
 	return bang;
+	
     }
 
 
@@ -215,11 +216,13 @@ class Period extends Phase {
     constructor(teilerArray){
 	super(teilerArray);
 	this.playSpeed = 1.0;
+	this.bang = {};
+	this.playtime=0; //??????????????
     }
     
-    emitPeriod(timeArray){
+    makePeriod(timeArray){
 	
-	const makePeriod = (timeArray) => {
+	const calcPeriod = (timeArray) => {
 	    let bang={};
 	    let current=0;
 
@@ -238,6 +241,7 @@ class Period extends Phase {
 		}
 		current+=time;
 	    }
+	    /*
 	    //add krebs
 	    for (const [key, value] of Object.entries(bang)) {
 		let k=Number(key);
@@ -246,72 +250,140 @@ class Period extends Phase {
 		    bang[t]=value;
 		//}
 	    }
+	    */
 	    //contains the last (unplyaed) item!!!
 	    return bang;
 	} //makePeriod
 
-	const emitBang = ( value ) => {
+///////////////////////////////////////////////////////////////////////////////////////////////
 
-	    const arpDelay = 30;
+	const ornamentBang = (bang) => {
+
+	    let current = 0;
+
+	    const addRandom = (value ) => {
+		for(let i=3;i<9;i++){
+		    value[i]=Math.random();
+		}
+	    }
 	    
-	    const beep = (value) => { this.emit('bang',value) };
+	    const makeArpeggio = (start, value) => {
 
-	    const emitArpeggio = (start, value, delay) => {
+		const arpDelay = 30;
 
 		const random = laenge => Math.floor(laenge*Math.random()) ;
 		let choosen=random(arpeggio.length);
 		let arp = arpeggio[choosen];
 
-		this.emit('arpeggio');
-		for(let i=0;i<arp.length;i++){
-		    setTimeout(beep,start+arp[i]*delay,value)
+		value[2] = ARPEGGIO;
+		addRandom(value);
+		
+		// start with one (not zero)
+		for(let i=1;i<arp.length;i++){
+		    let time=start+arp[i]*arpDelay;
+		    bang[time]=[];
+		    bang[time][0]=0;
+		    bang[time][1]=0;
+		    bang[time][2] = ORNAMENT;
+		    addRandom(bang[time]);
 		}
 	    };
 
-	    const emitTuple = ( start, value) => {
-		this.emit('simple');
-		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
+	    const makeTuple = ( start, value) => {
+
+		let length = value[0];
+		value[2] = SIMPLE;
+		addRandom(value);
+		// start with one (not zero)
+		for(let i=1;i<length;i++){
+		    let time=start+i;
+		    bang[time] = [];
+		    bang[time][0]=0;
+		    bang[time][1]=0;
+		    bang[time][2] = ORNAMENT;
+		    addRandom(bang[time]);
+		}
 	    };
 
-	    this.emit('rawbang',value );
-
-	    if(value[0]==value[1]){
-		emitArpeggio(0, value[0], arpDelay);
-	    }else{
-		emitTuple(0,value[0]);
+	    const bangArray = Object.entries(bang);
+		
+	    // all, but the last!!
+	    for(let i=0;i<bangArray.length-1;i++){
+		    
+		const [ key,value ] = bangArray[i];
+		if(value[0]==value[1]){
+		    makeArpeggio(Number(key), value);
+		}else{
+		    makeTuple(Number(key),value);
+		}
 	    }
-	};
+	    const [ key,value ] = bangArray[bangArray.length-1];
+	    
+	    return key;
+	}// ornamentBang
+
+	const emitBang = (value) => {
+	    switch(value[2]){
+	    case SIMPLE:
+		this.emit('simple');
+		break;
+	    case ARPEGGIO:
+		this.emit('arpeggio');
+		break;
+	    case ORNAMENT:
+		this.emit('ornament');
+		break;
+	    }	
+	    this.emit('bang');//console.log(value);
+	    let sub=[];
+	    for(let i=2;i<value.length;i++)sub.push(value[i]);
+	    this.emit('rawbang',sub);
+	}	    
 	
 	const playBang = (bang) => {
-	    
+
+
+	    //console.log(bang);
+	    let duration = ornamentBang(bang);
+	    //console.log(ornament);
+	    /*
+	    //merge
+	    let ornamentArray=Object.entries(ornament);
+	    for(let i=0;i<ornamentArray.length;i++){
+		const [ key,value]=ornamentArray[i];
+		this.bang[key]=value;
+	    }
+	    */
+	    //console.log(bang);	    
 	    const bangArray = Object.entries(bang);
 
+	    //forward
 	    // all, but the last!!
 	    for(let i=0;i<bangArray.length-1;i++){
 		const [ key,value ] = bangArray[i];
-
-		let k=Math.round(Number(key)*this.playSpeed);
-		let v=value;
-
-		setTimeout(emitBang,k,v);
+		setTimeout(emitBang,key,value);
 	    }
-	    //handle the last
-	    const [ key,value ] = bangArray[bangArray.length-1];
-	    return Math.round(key*this.playSpeed); // =full time
+	    // krebs
+	    for(let i=0;i<bangArray.length-1;i++){
+		const [ key,value ] = bangArray[i];
+		let time = 2*duration-key
+		setTimeout(emitBang,time,value);
+	    }
+	    return 2*duration;
+	}
 
-	} //playBang
+	    //let ornament={};
 
-	let bang=makePeriod(timeArray);
-	this.teilerLength = this.teilerArray.length;
+	this.bang=calcPeriod(timeArray);
 	//console.log(bang);
-	let periodTime = playBang(bang);
+	let periodTime = playBang(this.bang);
 	
 	setTimeout(() => {this.emit('periodend')},periodTime);
 	return periodTime;
-    } //emitPeriod
 
-}
-
+    }// makePeriod;
+    
+}// class period
 
 
 class Zyklus extends Period {
@@ -342,18 +414,11 @@ class Zyklus extends Period {
     stop(){
 	console.log("stop")
 	this.playCommand = STOP;
-	/*
-	this.playing=false;
-	this.counter=0;
-        */
     }
 
     pause(){
 	console.log("pause")	
 	this.playCommand = PAUSE;
-	/*
-	this.playing=false;
-        */
     }
 
 
@@ -363,7 +428,8 @@ class Zyklus extends Period {
 	    console.log("play");
 	    let index = krebs(that.zyklus.length,that.counter);
 	    //console.log(that.counter,that.zyklus[index]);
-	    let playTime = that.emitPeriod(that.zyklus[index]);
+	    let playTime = that.makePeriod(that.zyklus[index]);
+	    //this.bangArray[this.counter]=this.bang;
 	    console.log(that.counter,playTime,that.zyklus[index]);
 
 	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 )that.emit('zyklusend');
@@ -390,6 +456,7 @@ class Unstet extends Zyklus {
     constructor(teilerArray,phaseArray,addonArray){
 	super(teilerArray,[]);
 	this.setZyklus(phaseArray,addonArray);
+	this.bangArray=[];
 	//this.phaseArray = phaseArray;
 	//this.addonArray = addonArray;
 	//let zyklus = this.calcZyklus(this.phaseArray,this.addonArray);
@@ -456,3 +523,63 @@ exports.Phase = Phase;
 exports.Period = Period;
 exports.Zyklus = Zyklus;
 exports.Unstet = Unstet;
+
+
+/////////////////////////////////////////////////////////////////////////////////////////7
+	/*
+	const emitBang = ( value ) => {
+
+	    const arpDelay = 30;
+	    
+	    const beep = (value) => { this.emit('bang',value) };
+
+	    const emitArpeggio = (start, value, delay) => {
+
+		const random = laenge => Math.floor(laenge*Math.random()) ;
+		let choosen=random(arpeggio.length);
+		let arp = arpeggio[choosen];
+
+		this.emit('arpeggio');
+		for(let i=0;i<arp.length;i++){
+		    setTimeout(beep,start+arp[i]*delay,value)
+		}
+	    };
+
+	    const emitTuple = ( start, value) => {
+		this.emit('simple');
+		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
+	    };
+
+	    this.emit('rawbang',value );
+
+	    if(value[0]==value[1]){
+		emitArpeggio(0, value[0], arpDelay);
+	    }else{
+		emitTuple(0,value[0]);
+	    }
+	};
+	
+	const playBang = (bang) => {
+	    
+	    const bangArray = Object.entries(bang);
+
+	    // all, but the last!!
+	    for(let i=0;i<bangArray.length-1;i++){
+		const [ key,value ] = bangArray[i];
+
+		let k=Math.round(Number(key)*this.playSpeed);
+		let v=value;
+
+		setTimeout(emitBang,k,v);
+	    }
+	    //handle the last
+	    const [ key,value ] = bangArray[bangArray.length-1];
+	    return Math.round(key*this.playSpeed); // =full time
+
+	} //playBang
+	
+	
+    } //emitPeriod
+
+}
+*/

@@ -1,0 +1,7 @@
+#N canvas 221 396 450 300 12;
+#X obj 75 151 oscsend-abstraction;
+#X msg 82 74 localhost 10000 /uhu/gaga 1 5 miau grunz;
+#X obj 11 6 oscsend-abstraction;
+#X text 158 6 - sends osc message;
+#X text 86 51 host port address arg1 arg2 ... argN;
+#X connect 1 0 0 0;

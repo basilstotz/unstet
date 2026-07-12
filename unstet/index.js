@@ -55,6 +55,7 @@ setInterval( () => { sendOSC('/hello',myIP,port+1) },5000);
 unstet.on( 'bang', () => { sendOSC('/bang')});
 unstet.on( 'simple', () => { sendOSC('/simple')});
 unstet.on( 'arpeggio', () => { sendOSC('/arpeggio')});
+unstet.on( 'ornament', () => { sendOSC('/ornament')});
 unstet.on( 'periodend', () => { sendOSC('/periodend')});
 unstet.on( 'zyklusend', () => { sendOSC('/zyklusendend')});
 unstet.on( 'playstart', () => { sendOSC('/playstart')});
