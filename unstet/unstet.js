@@ -168,7 +168,7 @@ class Phase extends EventEmitter {
 	let factor=length/10000.0;
 	//console.log("lf ",length,factor)
 	for (const [key, value] of Object.entries(this.phasePrototype)) {
-	    let newtime=Math.round(key*factor);
+	    let newtime=Math.round(Number(key)*factor);
 	    //let newvalue=value;
 	    //for(let i=2;i<7;i++)newvalue[i]=Math.random();
 	    //console.log(key,newtime,value);
@@ -231,26 +231,13 @@ class Period extends Phase {
 		let time=timeArray[i];
 		//console.log("i time",i,time);
 		
-		//console.log("pha",pha);
 		let b=this.getPhase(time);
-		//console.log("bang",b);
-		//console.log(b);
 		for (const [key, value] of Object.entries(b)) {
 		    let t=current+Number(key);
 		    bang[t]=value;
 		}
 		current+=time;
 	    }
-	    /*
-	    //add krebs
-	    for (const [key, value] of Object.entries(bang)) {
-		let k=Number(key);
-		//if(k!=0){
-		    let t=2*current-k
-		    bang[t]=value;
-		//}
-	    }
-	    */
 	    //contains the last (unplyaed) item!!!
 	    return bang;
 	} //makePeriod
@@ -319,7 +306,7 @@ class Period extends Phase {
 	    }
 	    const [ key,value ] = bangArray[bangArray.length-1];
 	    
-	    return key;
+	    return Number(key);
 	}// ornamentBang
 
 	const emitBang = (value) => {
@@ -342,18 +329,9 @@ class Period extends Phase {
 	
 	const playBang = (bang) => {
 
-
 	    //console.log(bang);
 	    let duration = ornamentBang(bang);
 	    //console.log(ornament);
-	    /*
-	    //merge
-	    let ornamentArray=Object.entries(ornament);
-	    for(let i=0;i<ornamentArray.length;i++){
-		const [ key,value]=ornamentArray[i];
-		this.bang[key]=value;
-	    }
-	    */
 	    //console.log(bang);	    
 	    const bangArray = Object.entries(bang);
 
@@ -361,12 +339,12 @@ class Period extends Phase {
 	    // all, but the last!!
 	    for(let i=0;i<bangArray.length-1;i++){
 		const [ key,value ] = bangArray[i];
-		setTimeout(emitBang,key,value);
+		setTimeout(emitBang,Number(key),value);
 	    }
 	    // krebs
 	    for(let i=0;i<bangArray.length-1;i++){
 		const [ key,value ] = bangArray[i];
-		let time = 2*duration-key
+		let time = 2*duration-Number(key)
 		setTimeout(emitBang,time,value);
 	    }
 	    return 2*duration;
@@ -429,7 +407,7 @@ class Zyklus extends Period {
 	    let index = krebs(that.zyklus.length,that.counter);
 	    //console.log(that.counter,that.zyklus[index]);
 	    let playTime = that.makePeriod(that.zyklus[index]);
-	    //this.bangArray[this.counter]=this.bang;
+	    that.bangArray[that.counter]=that.bang;
 	    console.log(that.counter,playTime,that.zyklus[index]);
 
 	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 )that.emit('zyklusend');
