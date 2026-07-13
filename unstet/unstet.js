@@ -36,6 +36,30 @@ let arpeggio = [
 ];
 
 
+
+
+// https://emanueleferonato.com/2026/01/08/understanding-how-to-use-mulberry32-to-achieve-deterministic-randomness-in-javascript/
+
+class Mulberry32 {
+    //seed between 0 and 4,294,967,295 (=2^32-1)
+    constructor(seed) {
+        this.seed = seed >>> 0;   // seed >>> 0 converts any number to uint32 (even NaN)
+    }
+
+    restart(seed){
+	this.seed = seed >>> 0;
+    }
+    
+    random() {
+        let t = this.seed += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+}
+const mulberry = new Mulberry32(42);
+
+
 function krebs(laenge,index){
     let ind=index%(2*laenge)
     if(ind<laenge){
@@ -170,7 +194,7 @@ class Phase extends EventEmitter {
 	for (const [key, value] of Object.entries(this.phasePrototype)) {
 	    let newtime=Math.round(Number(key)*factor);
 	    //let newvalue=value;
-	    //for(let i=2;i<7;i++)newvalue[i]=Math.random();
+	    //for(let i=2;i<7;i++)newvalue[i]=mulberry.random();
 	    //console.log(key,newtime,value);
 	    bang[newtime]=value
 	}
@@ -258,7 +282,7 @@ class Period extends Phase {
 
 	    const addRandom = (value ) => {
 		for(let i=3;i<9;i++){
-		    value[i]=Math.random();
+		    value[i]=mulberry.random();
 		}
 	    }
 	    
@@ -266,7 +290,7 @@ class Period extends Phase {
 
 		const arpDelay = 30;
 
-		const random = laenge => Math.floor(laenge*Math.random()) ;
+		const random = laenge => Math.floor(laenge*mulberry.random()) ;
 		let choosen=random(arpeggio.length);
 		let arp = arpeggio[choosen];
 
@@ -352,9 +376,6 @@ class Period extends Phase {
 	}	    
 	
 
-	//console.log(bang);
-	//console.log(ornament);
-	//console.log(bang);	    
 	const bangArray = Object.entries(bang);
 
 	//forward
@@ -364,21 +385,46 @@ class Period extends Phase {
 	    setTimeout(emitBang,Number(key),value);
 	}
 	// krebs
+	let delta;
+	let arp;
+	//all but the last
 	for(let i=0;i<bangArray.length-1;i++){
 	    const [ key,value ] = bangArray[i];
 	    let k=Number(key);
-	    let delta;
-
-	    //shift arpeggio
+	    //maybe shift arpeggio
 	    switch(value[2]){
 	    case ARPEGGIO:
-		const [ key,value ] = bangArray[i+3];
-		delta=Number(k)-k
+		//find last arpeggio ornament
+		let ind=0;
+		let kk;
+		while(true){
+		    ind++;
+		    if(bangArray[i+ind]){
+			const [ key,value ] = bangArray[i+ind];
+			if(value[2] == ORNAMENT){
+			    kk=Number(key);
+			}else{
+			    break
+			}
+		    }else{
+			break
+		    }
+		}
+		//calc delta
+		if(kk){
+		    delta=kk-k,
+		    arp=true;
+		}else{
+		    delta=0
+		}
 		break;
 	    case ORNAMENT:
+		if(!arp)delta=0;
 		break;		
 	    case SIMPLE:
 		delta=0;
+		arp=false;
+		break;
 	    }
 	
 	    let time = this.periodTime+delta-k
@@ -543,3 +589,19 @@ exports.Period = Period;
 exports.Zyklus = Zyklus;
 exports.Unstet = Unstet;
 
+
+
+/*
+//https://github.com/cprosche/mulberry32
+function mulberry32(seed) {
+    return function() {
+	let t = (seed += 0x6D2B79F5);
+	t = Math.imul(t ^ (t >>> 15), t | 1);
+	t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+	return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+}
+const random = mulberry32(42); // Seed with 42
+console.log(random()); // Always ~0.5377 for this seed
+console.log(random()); // Next: ~0.8913
+*/
