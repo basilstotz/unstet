@@ -217,7 +217,15 @@ class Period extends Phase {
 	super(teilerArray);
 	this.playSpeed = 1.0;
 	this.bang = {};
-	this.playtime=0; //??????????????
+	this.periodTime=0; //??????????????
+    }
+
+
+    getPeriodTime(timeArray){
+	let dur = 0;
+	for(let i=0;i<timeArray.length;i++)dur+=timeArray[i];
+
+	return 2*dur
     }
     
     makePeriod(timeArray){
@@ -269,8 +277,8 @@ class Period extends Phase {
 		for(let i=1;i<arp.length;i++){
 		    let time=start+arp[i]*arpDelay;
 		    bang[time]=[];
-		    bang[time][0]=0;
-		    bang[time][1]=0;
+		    bang[time][0] = 0;
+		    bang[time][1] = 0;
 		    bang[time][2] = ORNAMENT;
 		    addRandom(bang[time]);
 		}
@@ -285,8 +293,8 @@ class Period extends Phase {
 		for(let i=1;i<length;i++){
 		    let time=start+i;
 		    bang[time] = [];
-		    bang[time][0]=0;
-		    bang[time][1]=0;
+		    bang[time][0] = 0;
+		    bang[time][1] = 0;
 		    bang[time][2] = ORNAMENT;
 		    addRandom(bang[time]);
 		}
@@ -304,10 +312,26 @@ class Period extends Phase {
 		    makeTuple(Number(key),value);
 		}
 	    }
-	    const [ key,value ] = bangArray[bangArray.length-1];
-	    
+	    const [ key,value ] = bangArray[bangArray.length-2];
+
+	    //return time of last bang
 	    return Number(key);
 	}// ornamentBang
+
+
+	this.periodTime=this.getPeriodTime(timeArray);
+
+	
+	this.bang=calcPeriod(timeArray);
+	ornamentBang(this.bang);
+	//console.log(bang);
+	//let fullTime=playBang(this.bang);
+	
+	return this.bang
+
+    }// makePeriod;
+
+    emitPeriod(bang){
 
 	const emitBang = (value) => {
 	    switch(value[2]){
@@ -321,45 +345,34 @@ class Period extends Phase {
 		this.emit('ornament');
 		break;
 	    }	
-	    this.emit('bang');//console.log(value);
+	    this.emit('bang');
 	    let sub=[];
 	    for(let i=2;i<value.length;i++)sub.push(value[i]);
 	    this.emit('rawbang',sub);
 	}	    
 	
-	const playBang = (bang) => {
 
-	    //console.log(bang);
-	    let duration = ornamentBang(bang);
-	    //console.log(ornament);
-	    //console.log(bang);	    
-	    const bangArray = Object.entries(bang);
-
-	    //forward
-	    // all, but the last!!
-	    for(let i=0;i<bangArray.length-1;i++){
-		const [ key,value ] = bangArray[i];
-		setTimeout(emitBang,Number(key),value);
-	    }
-	    // krebs
-	    for(let i=0;i<bangArray.length-1;i++){
-		const [ key,value ] = bangArray[i];
-		let time = 2*duration-Number(key)
-		setTimeout(emitBang,time,value);
-	    }
-	    return 2*duration;
-	}
-
-	    //let ornament={};
-
-	this.bang=calcPeriod(timeArray);
 	//console.log(bang);
-	let periodTime = playBang(this.bang);
-	
-	setTimeout(() => {this.emit('periodend')},periodTime);
-	return periodTime;
+	//console.log(ornament);
+	//console.log(bang);	    
+	const bangArray = Object.entries(bang);
 
-    }// makePeriod;
+	//forward
+	// all, but the last!!
+	for(let i=0;i<bangArray.length-1;i++){
+	    const [ key,value ] = bangArray[i];
+	    setTimeout(emitBang,Number(key),value);
+	}
+	// krebs
+	for(let i=0;i<bangArray.length-1;i++){
+	    const [ key,value ] = bangArray[i];
+	    let time = 2*this.periodTime-Number(key)
+	    setTimeout(emitBang,time,value);
+	}
+	setTimeout(() => {this.emit('periodend')},this.periodTime);
+	
+	return this.periodTime
+    }
     
 }// class period
 
@@ -368,8 +381,11 @@ class Zyklus extends Period {
 
     constructor(teilerArray,zyklus){
 	super(teilerArray);
+	
 	this.zyklus=zyklus;
+	this.bangArray=[];
 	this.counter=0;
+	
 	this.playCommand = STOP;
 	this.playing=false;
 	//console.log(this.phase)
@@ -377,12 +393,15 @@ class Zyklus extends Period {
 
     setZyklus(zyklus){
 	this.zyklus=zyklus;
+	this.bangArray=[];
+	this.counter=0;
     }
 
     play(){
-	console.log("play")
+	console.log("method: play")
 	this.playCommand = PLAY;
 	if(!this.playing){
+	    console.log("status: play");
 	    this.playing=true;
 	    this.emit('playstart');
 	    this.cycle(this);
@@ -390,12 +409,12 @@ class Zyklus extends Period {
     }
 
     stop(){
-	console.log("stop")
+	console.log("method: stop")
 	this.playCommand = STOP;
     }
 
     pause(){
-	console.log("pause")	
+	console.log("method: pause")	
 	this.playCommand = PAUSE;
     }
 
@@ -403,25 +422,35 @@ class Zyklus extends Period {
     //private 
     cycle(that){
 	if(that.playCommand == PLAY){
-	    console.log("play");
 	    let index = krebs(that.zyklus.length,that.counter);
-	    //console.log(that.counter,that.zyklus[index]);
-	    let playTime = that.makePeriod(that.zyklus[index]);
-	    that.bangArray[that.counter]=that.bang;
-	    console.log(that.counter,playTime,that.zyklus[index]);
+	    let period = that.zyklus[index];
+	    let playTime = that.getPeriodTime(period);
+	    
+	    if(!that.bangArray[index]){
+		//console.log("info: makePeriod");
+		that.bangArray[index]=that.makePeriod(period);
+	    }
+	    that.emitPeriod(that.bangArray[index]);
 
-	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 )that.emit('zyklusend');
+	    console.log(that.counter,playTime,period);
+
+	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 ){
+		that.counter=0;
+		that.bangArray=[];
+		that.emit('zyklusend')
+	    }
 
 	    that.counter++;
 	    
-	    //setTimeout(()=>{that.cycle},playTime)
+	    //recursive call!!!!
 	    setTimeout(that.cycle,playTime,that)
 	}else{
-	    console.log("stop or pause");
+	    console.log("status: stop");
 	    if(that.playCommand == STOP){
 		that.playing = false;
 		that.counter = 0;
 	    }else{ //PAUSE
+	    console.log("status: pause");
 		that.playing = false;
 	    }
 	    that.emit('playend');
@@ -434,11 +463,6 @@ class Unstet extends Zyklus {
     constructor(teilerArray,phaseArray,addonArray){
 	super(teilerArray,[]);
 	this.setZyklus(phaseArray,addonArray);
-	this.bangArray=[];
-	//this.phaseArray = phaseArray;
-	//this.addonArray = addonArray;
-	//let zyklus = this.calcZyklus(this.phaseArray,this.addonArray);
-	//this.setZyklus(zyklus);
     }
 
     setZyklus(phaseArray,addonArray){
