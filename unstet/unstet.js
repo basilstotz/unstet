@@ -366,7 +366,22 @@ class Period extends Phase {
 	// krebs
 	for(let i=0;i<bangArray.length-1;i++){
 	    const [ key,value ] = bangArray[i];
-	    let time = 2*this.periodTime-Number(key)
+	    let k=Number(key);
+	    let delta;
+
+	    //shift arpeggio
+	    switch(value[2]){
+	    case ARPEGGIO:
+		const [ key,value ] = bangArray[i+3];
+		delta=Number(k)-k
+		break;
+	    case ORNAMENT:
+		break;		
+	    case SIMPLE:
+		delta=0;
+	    }
+	
+	    let time = this.periodTime+delta-k
 	    setTimeout(emitBang,time,value);
 	}
 	setTimeout(() => {this.emit('periodend')},this.periodTime);
@@ -501,6 +516,7 @@ class Unstet extends Zyklus {
 	    
 	
 	let zyklus=reducedPermutations(addonArray,phaseArray.length);
+
 	// maybe add a zero-vector at beginn
 	/*
 	if(isNotZero(addonArray) && isNotZero(zyklus[0])){
@@ -510,6 +526,7 @@ class Unstet extends Zyklus {
 	    zyklus[0]=zero;
 	} 
         */  
+
 	//add grundzeit
 	for(let i=0;i<zyklus.length;i++){
 	    let line=zyklus[i];
@@ -526,62 +543,3 @@ exports.Period = Period;
 exports.Zyklus = Zyklus;
 exports.Unstet = Unstet;
 
-
-/////////////////////////////////////////////////////////////////////////////////////////7
-	/*
-	const emitBang = ( value ) => {
-
-	    const arpDelay = 30;
-	    
-	    const beep = (value) => { this.emit('bang',value) };
-
-	    const emitArpeggio = (start, value, delay) => {
-
-		const random = laenge => Math.floor(laenge*Math.random()) ;
-		let choosen=random(arpeggio.length);
-		let arp = arpeggio[choosen];
-
-		this.emit('arpeggio');
-		for(let i=0;i<arp.length;i++){
-		    setTimeout(beep,start+arp[i]*delay,value)
-		}
-	    };
-
-	    const emitTuple = ( start, value) => {
-		this.emit('simple');
-		for(let i=0;i<value;i++){ setTimeout(beep,start,value) }
-	    };
-
-	    this.emit('rawbang',value );
-
-	    if(value[0]==value[1]){
-		emitArpeggio(0, value[0], arpDelay);
-	    }else{
-		emitTuple(0,value[0]);
-	    }
-	};
-	
-	const playBang = (bang) => {
-	    
-	    const bangArray = Object.entries(bang);
-
-	    // all, but the last!!
-	    for(let i=0;i<bangArray.length-1;i++){
-		const [ key,value ] = bangArray[i];
-
-		let k=Math.round(Number(key)*this.playSpeed);
-		let v=value;
-
-		setTimeout(emitBang,k,v);
-	    }
-	    //handle the last
-	    const [ key,value ] = bangArray[bangArray.length-1];
-	    return Math.round(key*this.playSpeed); // =full time
-
-	} //playBang
-	
-	
-    } //emitPeriod
-
-}
-*/
