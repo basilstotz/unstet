@@ -36,10 +36,89 @@ let arpeggio = [
 ];
 
 
+class LaggedFibonacciGenerator {
+    /**
+     * Erstellt einen Additive Lagged Fibonacci Generator (ALFG).
+     * Formel: X_n = (X_{n-j} + X_{n-k}) mod M, wobei k > j.
+     * @param {number} j - Kleinerer Lag-Wert
+     * @param {number} k - Grösserer Lag-Wert
+     * @param {number} modulus - Der Modulus (Standard: 2^32 für 32-Bit-Ganzzahlen)
+     * @param {number} [seed] - Optionaler Startwert für die Initialisierung
+     */
+    constructor(seed = null, j = 24, k = 55, modulus = Math.pow(2, 32) ) {
+        if (j >= k) {
+            throw new Error("Der Lag 'j' muss strikt kleiner sein als 'k'.");
+        }
+
+        this.j = j;
+        this.k = k;
+        this.modulus = modulus;
+        
+        // Array als Ringpuffer (feste Grösse k)
+        this.buffer = new Array(k);
+        // Zeiger auf das älteste Element im Ringpuffer
+        this.pointer = 0;
+
+        this._initializeBuffer(seed);
+    }
+
+    /**
+     * Füllt den Puffer initial mithilfe eines einfachen LCG-Generators.
+     * @private
+     */
+    _initializeBuffer(seed) {
+        let current = seed !== null ? seed : Date.now();
+        if (current === 0) current = 1;
+
+        // Puffer mit Pseudozufallszahlen vorfüllen
+        for (let i = 0; i < this.k; i++) {
+            current = (1103515245 * current + 12345) % this.modulus;
+            this.buffer[i] = current;
+        }
+
+        // Sicherstellen, dass mindestens ein Wert ungerade ist (verhindert Endlosschleifen bei geradem Modulus)
+        if (this.modulus % 2 === 0) {
+            const hasOdd = this.buffer.some(x => x % 2 !== 0);
+            if (!hasOdd) {
+                this.buffer[0] |= 1;
+            }
+        }
+    }
+
+    /**
+     * Generiert die nächste Pseudozufallszahl (Ganzzahl).
+     * @returns {number} Ganzzahl im Bereich [0, modulus - 1]
+     */
+    nextNumber() {
+        // Positionen der historischen Werte im Ringpuffer berechnen
+        const idxJ = (this.pointer + (this.k - this.j)) % this.k;
+        const idxK = this.pointer; // Das älteste Element entspricht der Position k Stufen zurück
+
+        // Kern-Formel: (X_{n-j} + X_{n-k}) mod M
+        const newVal = (this.buffer[idxJ] + this.buffer[idxK]) % this.modulus;
+
+        // Überschreibe den ältesten Wert mit dem neuen Wert
+        this.buffer[this.pointer] = newVal;
+
+        // Zeiger im Ringpuffer um eine Position nach vorne verschieben
+        this.pointer = (this.pointer + 1) % this.k;
+
+        return newVal;
+    }
+
+    /**
+     * Generiert eine Pseudozufallszahl als Fliesskommazahl.
+     * @returns {number} Fliesskommazahl im Bereich [0.0, 1.0)
+     */
+    next() {
+        return this.nextNumber() / this.modulus;
+    }
+}
+const fibonacci = new LaggedFibonacciGenerator(42);
+
 
 
 // https://emanueleferonato.com/2026/01/08/understanding-how-to-use-mulberry32-to-achieve-deterministic-randomness-in-javascript/
-
 class Mulberry32 {
     //seed between 0 and 4,294,967,295 (=2^32-1)
     constructor(seed) {
@@ -50,7 +129,7 @@ class Mulberry32 {
 	this.seed = seed >>> 0;
     }
     
-    random() {
+    next() {
         let t = this.seed += 0x6D2B79F5;
         t = Math.imul(t ^ (t >>> 15), t | 1);
         t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -282,7 +361,8 @@ class Period extends Phase {
 
 	    const addRandom = (value ) => {
 		for(let i=3;i<9;i++){
-		    value[i]=mulberry.random();
+		    //value[i]=mulberry.next();
+		    value[i]=fibonacci.next();
 		}
 	    }
 	    
@@ -290,7 +370,8 @@ class Period extends Phase {
 
 		const arpDelay = 30;
 
-		const random = laenge => Math.floor(laenge*mulberry.random()) ;
+		//const random = laenge => Math.floor(laenge*mulberry.next()) ;
+		const random = laenge => Math.floor(laenge*fibonacci.next()) ;
 		let choosen=random(arpeggio.length);
 		let arp = arpeggio[choosen];
 
@@ -387,6 +468,7 @@ class Period extends Phase {
 	// krebs
 	let delta;
 	let arp;
+	
 	//all but the last
 	for(let i=0;i<bangArray.length-1;i++){
 	    const [ key,value ] = bangArray[i];
@@ -407,13 +489,14 @@ class Period extends Phase {
 			    break
 			}
 		    }else{
+			kk=false;
 			break
 		    }
 		}
-		//calc delta
+		//calc delta = timelength of arpeggio
 		if(kk){
-		    delta=kk-k,
-		    arp=true;
+		    delta=kk-k;
+		    arp=true
 		}else{
 		    delta=0
 		}
