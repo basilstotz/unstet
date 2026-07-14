@@ -341,7 +341,7 @@ class Period extends Phase {
 		let time=timeArray[i];
 		//console.log("i time",i,time);
 		
-		let b=this.getPhase(time);
+		let b=this.getPhase(time);//console.log(b);
 		for (const [key, value] of Object.entries(b)) {
 		    let t=current+Number(key);
 		    bang[t]=value;
@@ -375,7 +375,7 @@ class Period extends Phase {
 		let arp = arpeggio[choosen];
 
 		value[2] = ARPEGGIO;
-		addRandom(value);
+//addRandom(value);
 		
 		// start with one (not zero)
 		for(let i=1;i<arp.length;i++){
@@ -384,7 +384,7 @@ class Period extends Phase {
 		    bang[time][0] = 0;
 		    bang[time][1] = 0;
 		    bang[time][2] = ORNAMENT;
-		    addRandom(bang[time]);
+//addRandom(bang[time]);
 		}
 	    };
 
@@ -392,7 +392,7 @@ class Period extends Phase {
 
 		let length = value[0];
 		value[2] = SIMPLE;
-		addRandom(value);
+//addRandom(value);
 		// start with one (not zero)
 		for(let i=1;i<length;i++){
 		    let time=start+i;
@@ -400,14 +400,14 @@ class Period extends Phase {
 		    bang[time][0] = 0;
 		    bang[time][1] = 0;
 		    bang[time][2] = ORNAMENT;
-		    addRandom(bang[time]);
+//addRandom(bang[time]);
 		}
 	    };
 
 	    const bangArray = Object.entries(bang);
 		
-	    // all, but the last!!
-	    for(let i=0;i<bangArray.length-1;i++){
+	    // all,     with the last!!
+	    for(let i=0;i<bangArray.length;i++){
 		    
 		const [ key,value ] = bangArray[i];
 		if(value[0]==value[1]){
@@ -416,9 +416,9 @@ class Period extends Phase {
 		    makeTuple(Number(key),value);
 		}
 	    }
-	    const [ key,value ] = bangArray[bangArray.length-2];
+	    const [ key,value ] = bangArray[bangArray.length-1];
 
-	    //return time of last bang
+	    //return time of last bang (not used)
 	    return Number(key);
 	}// ornamentBang
 
@@ -427,8 +427,8 @@ class Period extends Phase {
 
 	
 	this.bang=calcPeriod(timeArray);
-	ornamentBang(this.bang);
-	//console.log(bang);
+ornamentBang(this.bang);
+console.log(this.bang);
 	//let fullTime=playBang(this.bang);
 	
 	return this.bang
@@ -469,8 +469,8 @@ class Period extends Phase {
 	let arp;
 	let pass=false;
 	
-	//all but the last
-	for(let i=0;i<bangArray.length-1;i++){
+	//all   ( including the last)
+	for(let i=0;i<bangArray.length;i++){
 	    const [ key,value ] = bangArray[i];
 	    let k=Number(key);
 	    //maybe shift arpeggio
@@ -517,7 +517,7 @@ class Period extends Phase {
 	setTimeout(() => {this.emit('periodend')},this.periodTime);
 	
 	return this.periodTime
-    }
+    }//emit bang
     
 }// class period
 
