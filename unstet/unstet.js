@@ -35,24 +35,23 @@ let arpeggio = [
     [ 0, 3, 5, 6 ]
 ];
 
-
+//https://en.wikipedia.org/wiki/Lagged_Fibonacci_generator
 class LaggedFibonacciGenerator {
     /**
      * Erstellt einen Additive Lagged Fibonacci Generator (ALFG).
      * Formel: X_n = (X_{n-j} + X_{n-k}) mod M, wobei k > j.
+     * @param {number} [seed] - Optionaler Startwert für die Initialisierung
      * @param {number} j - Kleinerer Lag-Wert
      * @param {number} k - Grösserer Lag-Wert
-     * @param {number} modulus - Der Modulus (Standard: 2^32 für 32-Bit-Ganzzahlen)
-     * @param {number} [seed] - Optionaler Startwert für die Initialisierung
      */
-    constructor(seed = null, j = 24, k = 55, modulus = Math.pow(2, 32) ) {
+    constructor(seed = null, j = 24, k = 55 ) {
         if (j >= k) {
             throw new Error("Der Lag 'j' muss strikt kleiner sein als 'k'.");
         }
 
         this.j = j;
         this.k = k;
-        this.modulus = modulus;
+        this.modulus = Math.pow(2, 32),
         
         // Array als Ringpuffer (feste Grösse k)
         this.buffer = new Array(k);
@@ -468,6 +467,7 @@ class Period extends Phase {
 	// krebs
 	let delta;
 	let arp;
+	let pass=false;
 	
 	//all but the last
 	for(let i=0;i<bangArray.length-1;i++){
@@ -506,12 +506,13 @@ class Period extends Phase {
 		break;		
 	    case SIMPLE:
 		delta=0;
+		pass=true;
 		arp=false;
 		break;
 	    }
 	
 	    let time = this.periodTime+delta-k
-	    setTimeout(emitBang,time,value);
+	    if(pass)setTimeout(emitBang,time,value);
 	}
 	setTimeout(() => {this.emit('periodend')},this.periodTime);
 	
