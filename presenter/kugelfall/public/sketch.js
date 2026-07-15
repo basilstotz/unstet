@@ -148,7 +148,7 @@ function setup() {
 	v[i].hide();
 	v[i].volume(1);
 	v[i].onended(endedVideo);
-	v[i].elt.oncanplaythrough = (e) => { console.log("trough ",e)};
+	//v[i].elt.oncanplaythrough = (e) => { console.log("trough ",e)};
 	//if(i==0){v[i].autoplay(true);}else{v[i].autoplay(false);};
 	if(config.buttons){button(i);}
     }
@@ -174,7 +174,7 @@ Message {
 	socket.on('osc',
 	      // When we receive data
 	      function(message) {
-		  //console.log("websocket-message");
+		  console.log("websocket-message: ",message);
 		  //div.html(JSON.stringify(message));
 		  gmessage=JSON.stringify(message);
 		  //if(config.buttons){console.log(message);}
@@ -185,7 +185,7 @@ Message {
 			  //let leange=v.length;
 			  //let choosen=Math.floor(leange*Math.random())
 		      //showVideo(choosen);
-		      bang();
+		      bang(message);
 		      //}
 		  }
 	      });
@@ -212,9 +212,11 @@ function banger(){
     setInterval(bang,2000);
 }
 
-function bang(){
+function bang(clip){
+    if(!clip)clip=Math.random();
+	
     let leange=v.length;
-    let choosen=Math.floor(leange*Math.random())
+    let choosen=Math.floor(leange*clip)
     showVideo(choosen);
 }
 

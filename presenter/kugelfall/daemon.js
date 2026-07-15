@@ -72,9 +72,7 @@ osc.on('open', message => {
 });
 
 
-osc.on('/bang', message => {
-
-    //console.log('recieved osc-message: '+JSON.stringify(message));
+function doit(beamer,clip){
 
     let clients=io.sockets.sockets;
     //console.log(clients);
@@ -88,8 +86,8 @@ osc.on('/bang', message => {
 	//trigger one of them
 	if(free.size>0){
 	    //console.log("free",free);
-	    let choose=random(free.size);
-
+	    //let choose=random(free.size);
+            let choose=Math.floor(free.size*beamer);
 	    // not funny solution
 	    let count=0;
 	    let id;
@@ -113,7 +111,7 @@ osc.on('/bang', message => {
 	    if(socket){
 		socket.busy=true;
 		setTimeout(freeSocket,1000,socket);
-		io.to(id).emit('osc',"gaga");
+		io.to(id).emit('osc',clip);
 		console.log(free.size+"/"+clients.size+" clients => emit to "+choose);
 	    }else{
 		console.log("socket not ready");
@@ -127,7 +125,21 @@ osc.on('/bang', message => {
     
     //console.log(clients.size,choose,id);
     //https://socket.io/docs/v3/emit-cheatsheet/
-
+}
+/*
+osc.on('/bang', message => {
+    //console.log('recieved osc-message: '+JSON.stringify(message));
+    doit(Math.random(),Math.random());
+});
+*/
+osc.on('/rawbang', message => {
+    //console.log('recieved osc-message: '+JSON.stringify(message));
+    let beamer=Math.random();
+    let clip=Math.random();
+    
+    if(message.args[1])beamer=message.args[1];
+    if(message.args[2])clip=message.args[2];
+    doit(beamer,clip);
 });
 
 
