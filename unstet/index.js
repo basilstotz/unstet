@@ -39,18 +39,18 @@ function sendOSC(...args){
 }
 
 //setup unstet
-let teiler = [ 1, 2, 3, 5, 8, 13];
-//let phase = [ 8000, 13000, 21000, 34000 ];
-//let addon = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ]; 
-let phase = [ 0, 0, 0, 0];
-let addon = [ 5000,8000,13000,21000,34000,55000 ]; 
-let unstet = new Unstet( teiler, phase, addon );
+let teiler = [ 1, 2, 3,5,8,13];
+//let period = [ 8000, 13000, 21000, 34000 ];
+//let variation = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ]; 
+let period = [ 0, 0,0,0 ];
+let variation = [ 5000,8000,13000,21000,34000,55000 ];
+//let variation = [ 5000,8000,13000,21000]; 
 
-//osc.send(new OSC.Message('/hello'),{ host: host, port: port })
+// instantiate unstet
+let unstet = new Unstet( teiler, period, variation );
 
+// send hello 
 setInterval( () => { sendOSC('/hello',myIP,port+1) },5000);
-//setInterval( () => {osc.send(new OSC.Message('/hello'),{ host: host, port: port })},5000);
-
 // send bangs
 unstet.on( 'bang', () => { sendOSC('/bang')});
 unstet.on( 'simple', () => { sendOSC('/simple')});

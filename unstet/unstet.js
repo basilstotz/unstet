@@ -12,6 +12,12 @@ const ORNAMENT = 0;
 const SIMPLE = 1;
 const ARPEGGIO = 2;
 
+//indexes in value
+const COUNT = 0;
+const FULL = 1;
+const DELTA = 2;
+const TYPE = 3;
+
 let arpeggio = [
     [ 0, 1, 2, 3 ],   //kurz
     [ 0, 1, 2, 4 ],   //halb-kurz
@@ -140,12 +146,24 @@ const mulberry = new Mulberry32(42);
 
 function krebs(laenge,index){
     let ind=index%(2*laenge)
+    let out;
+    let forward;
     if(ind<laenge){
-	return ind
+	forward =true;
+	out = ind
     }else{
-	return 2*laenge-ind-1;
+	forward = false
+	out = 2*laenge-ind-1;
     }
+    return { forward: forward, index: out }
 }
+
+/*
+for(let i=0;i<20;i++){
+    console.log(i,krebs(5,i))
+}
+process.exit();
+*/
 
 function permutations(arr) {
   // Base case: if array has 0 or 1 elements, return it wrapped in an array
@@ -295,11 +313,11 @@ class Phase extends EventEmitter {
 		let roundTime=Math.round(time);
 		let b=bang[Number(roundTime)];
 		if(b){
-		    b[0]=b[0]+1;
+		    b[COUNT]=b[COUNT]+1;
 		}else{
 		    bang[roundTime]=[];
-		    bang[roundTime].push(1);
-		    bang[roundTime].push(teilerArray.length);
+		    bang[roundTime][COUNT]=1
+		    bang[roundTime][FULL]=teilerArray.length
 		}
 		time+=delta;
 	    }
@@ -318,7 +336,7 @@ class Period extends Phase {
     constructor(teilerArray){
 	super(teilerArray);
 	this.playSpeed = 1.0;
-	this.bang = {};
+	//this.bang = {};
 	this.periodTime=0; //??????????????
     }
 
@@ -331,6 +349,8 @@ class Period extends Phase {
     }
     
     makePeriod(timeArray){
+
+	let bang={}
 	
 	const calcPeriod = (timeArray) => {
 	    let bang={};
@@ -354,91 +374,113 @@ class Period extends Phase {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-	const ornamentBang = (bang) => {
-
-	    let current = 0;
-
-	    const addRandom = (value ) => {
-		for(let i=3;i<9;i++){
-		    //value[i]=mulberry.next();
-		    value[i]=fibonacci.next();
-		}
-	    }
-	    
-	    const makeArpeggio = (start, value) => {
-
-		const arpDelay = 30;
-
-		//const random = laenge => Math.floor(laenge*mulberry.next()) ;
-		const random = laenge => Math.floor(laenge*fibonacci.next()) ;
-		let choosen=random(arpeggio.length);
-		let arp = arpeggio[choosen];
-
-		value[2] = ARPEGGIO;
-//addRandom(value);
-		
-		// start with one (not zero)
-		for(let i=1;i<arp.length;i++){
-		    let time=start+arp[i]*arpDelay;
-		    bang[time]=[];
-		    bang[time][0] = 0;
-		    bang[time][1] = 0;
-		    bang[time][2] = ORNAMENT;
-//addRandom(bang[time]);
-		}
-	    };
-
-	    const makeTuple = ( start, value) => {
-
-		let length = value[0];
-		value[2] = SIMPLE;
-//addRandom(value);
-		// start with one (not zero)
-		for(let i=1;i<length;i++){
-		    let time=start+i;
-		    bang[time] = [];
-		    bang[time][0] = 0;
-		    bang[time][1] = 0;
-		    bang[time][2] = ORNAMENT;
-//addRandom(bang[time]);
-		}
-	    };
-
-	    const bangArray = Object.entries(bang);
-		
-	    // all,     with the last!!
-	    for(let i=0;i<bangArray.length;i++){
-		    
-		const [ key,value ] = bangArray[i];
-		if(value[0]==value[1]){
-		    makeArpeggio(Number(key), value);
-		}else{
-		    makeTuple(Number(key),value);
-		}
-	    }
-	    const [ key,value ] = bangArray[bangArray.length-1];
-
-	    //return time of last bang (not used)
-	    return Number(key);
-	}// ornamentBang
 
 
 	this.periodTime=this.getPeriodTime(timeArray);
 
 	
-	this.bang=calcPeriod(timeArray);
-ornamentBang(this.bang);
-console.log(this.bang);
+	bang=calcPeriod(timeArray);
+	//ornamentBang(bang);
+//console.log(bang);
 	//let fullTime=playBang(this.bang);
 	
-	return this.bang
+	return bang
 
     }// makePeriod;
 
+
+    ornamentPeriod(bang,add=true){
+
+	//const add=false;
+
+	let current = 0;
+
+	const addRandom = (value ) => {
+	    let len = TYPE+1
+	    for(let i=len;i<len+6;i++){
+		//value[i]=mulberry.next();
+		value[i]=fibonacci.next();
+	    }
+	}
+
+	const makeArpeggio = (start, value) => {
+
+	    const arpDelay = 30;
+
+	    //const random = laenge => Math.floor(laenge*mulberry.next()) ;
+	    const random = laenge => Math.floor(laenge*fibonacci.next()) ;
+	    let choosen=random(arpeggio.length);
+	    let arp = arpeggio[choosen];
+
+	    let del = arp[arp.length-1]*arpDelay;		
+	    value[DELTA] = del;
+	    //console.log("b",value[DELTA]);
+	    value[TYPE] = ARPEGGIO;
+	    if(add)addRandom(value);
+
+	    // start with one (not zero)
+	    for(let i=1;i<arp.length;i++){
+		let time=start+arp[i]*arpDelay;
+		bang[time]=[];
+		bang[time][COUNT] = 0;
+		bang[time][FULL] = 0;
+		bang[time][DELTA] = del;
+		//console.log("o",bang[time][DELTA]);
+		bang[time][TYPE] = ORNAMENT;
+		if(add)addRandom(bang[time]);
+	    }
+	};
+
+	const makeTuple = ( start, value) => {
+
+	    let length = value[COUNT];
+
+	    value[DELTA] = 0;
+	    value[TYPE] = SIMPLE;
+	    if(add)addRandom(value);
+	    // start with one (not zero)
+	    for(let i=1;i<length;i++){
+		let time=start+i;
+		bang[time] = [];
+		bang[time][COUNT] = 0;
+		bang[time][FULL] = 0;
+		bang[time][DELTA] = 0;
+		bang[time][TYPE] = ORNAMENT;
+		if(add)addRandom(bang[time]);
+	    }
+	};
+
+
+	// remove all ornaments (if any)
+	let bangArray = Object.entries(bang);
+	for(let i=0;i<bangArray.length;i++){
+	    let [ key,value ]=bangArray[i];
+	    if(value[TYPE] == ORNAMENT)delete bang[key];
+	}
+	//console.log(uhu,bangArray.length);
+
+	// all,     with the last!!
+	bangArray=Object.entries(bang);
+	for(let i=0;i<bangArray.length;i++){
+
+	    const [ key,value ] = bangArray[i];
+	    if(value[COUNT]==value[FULL]){
+		makeArpeggio(Number(key), value);
+	    }else{
+		makeTuple(Number(key),value);
+	    }
+	}
+	const [ key,value ] = bangArray[bangArray.length-1];
+
+	//return time of last bang (not used)
+	return Number(key);
+    }// ornamentBang
+
+    
     emitPeriod(bang){
 
 	const emitBang = (value) => {
-	    switch(value[2]){
+	    switch(value[TYPE]){
 	    case SIMPLE:
 		this.emit('simple');
 		break;
@@ -451,68 +493,34 @@ console.log(this.bang);
 	    }	
 	    this.emit('bang');
 	    let sub=[];
-	    for(let i=2;i<value.length;i++)sub.push(value[i]);
+	    for(let i=3;i<value.length;i++)sub.push(value[i]);
 	    this.emit('rawbang',sub);
 	}	    
 	
-
+//console.log(bang);
 	const bangArray = Object.entries(bang);
 
 	//forward
-	// all, but the last!!
-	for(let i=0;i<bangArray.length-1;i++){
+	// all,  
+	for(let i=0;i<bangArray.length;i++){
 	    const [ key,value ] = bangArray[i];
 	    setTimeout(emitBang,Number(key),value);
 	}
 	// krebs
-	let delta;
-	let arp;
-	let pass=false;
-	
-	//all   ( including the last)
+	//all  
+	let pass=false;	
 	for(let i=0;i<bangArray.length;i++){
 	    const [ key,value ] = bangArray[i];
 	    let k=Number(key);
-	    //maybe shift arpeggio
-	    switch(value[2]){
-	    case ARPEGGIO:
-		//find last arpeggio ornament
-		let ind=0;
-		let kk;
-		while(true){
-		    ind++;
-		    if(bangArray[i+ind]){
-			const [ key,value ] = bangArray[i+ind];
-			if(value[2] == ORNAMENT){
-			    kk=Number(key);
-			}else{
-			    break
-			}
-		    }else{
-			kk=false;
-			break
-		    }
-		}
-		//calc delta = timelength of arpeggio
-		if(kk){
-		    delta=kk-k;
-		    arp=true
-		}else{
-		    delta=0
-		}
-		break;
-	    case ORNAMENT:
-		if(!arp)delta=0;
-		break;		
-	    case SIMPLE:
-		delta=0;
-		pass=true;
-		arp=false;
-		break;
+	    
+	    // skip last (= here it is first) bang and arpeggio
+	    if(value[TYPE] == SIMPLE)pass=true;
+	    // here it's done (maybe)
+	    if(pass){
+		let delta = value[DELTA];
+		let time = this.periodTime+delta-k
+		setTimeout(emitBang,time,value)
 	    }
-	
-	    let time = this.periodTime+delta-k
-	    if(pass)setTimeout(emitBang,time,value);
 	}
 	setTimeout(() => {this.emit('periodend')},this.periodTime);
 	
@@ -567,21 +575,27 @@ class Zyklus extends Period {
     //private 
     cycle(that){
 	if(that.playCommand == PLAY){
-	    let index = krebs(that.zyklus.length,that.counter);
+	    let { index, forward } = krebs(that.zyklus.length,that.counter);
 	    let period = that.zyklus[index];
 	    let playTime = that.getPeriodTime(period);
 	    
 	    if(!that.bangArray[index]){
-		//console.log("info: makePeriod");
+		console.log("info: makePeriod");
 		that.bangArray[index]=that.makePeriod(period);
 	    }
+
+	    if(forward){
+		console.log("info: ornamentPeriod");
+		that.ornamentPeriod(that.bangArray[index],true);
+	    }
+	    
 	    that.emitPeriod(that.bangArray[index]);
 
 	    console.log(that.counter,playTime,period);
 
 	    if( that.counter>0 && that.counter%(2*that.zyklus.length)==0 ){
-		that.counter=0;
-		that.bangArray=[];
+		//that.counter=0;
+		//that.bangArray=[];
 		that.emit('zyklusend')
 	    }
 
@@ -590,12 +604,12 @@ class Zyklus extends Period {
 	    //recursive call!!!!
 	    setTimeout(that.cycle,playTime,that)
 	}else{
-	    console.log("status: stop");
 	    if(that.playCommand == STOP){
+		console.log("status: stop");
 		that.playing = false;
 		that.counter = 0;
 	    }else{ //PAUSE
-	    console.log("status: pause");
+		console.log("status: pause");
 		that.playing = false;
 	    }
 	    that.emit('playend');
@@ -689,3 +703,45 @@ const random = mulberry32(42); // Seed with 42
 console.log(random()); // Always ~0.5377 for this seed
 console.log(random()); // Next: ~0.8913
 */
+
+	    /*
+	    //maybe shift arpeggio
+	    switch(value[TYPE]){
+	    case ARPEGGIO:
+		//find last arpeggio ornament
+	
+		let ind=0;
+		let kk;
+		while(true){
+		    ind++;
+		    if(bangArray[i+ind]){
+			const [ key,value ] = bangArray[i+ind];
+			if(value[TYPE] == ORNAMENT){
+			    kk=Number(key);
+			}else{
+			    break
+			}
+		    }else{
+			kk=false;
+			break
+		    }
+		}
+		//calc delta = timelength of arpeggio
+		if(kk){
+		    delta=kk-k;
+		    arp=true
+		}else{
+		    delta=0
+		}
+	
+		break;
+	    case ORNAMENT:
+		//if(!arp)delta=0;
+		break;		
+	    case SIMPLE:
+		//delta=0;
+		pass=true;
+		//arp=false;
+		break;
+	    }
+	    */
