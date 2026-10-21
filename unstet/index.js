@@ -2,7 +2,6 @@
 const Unstet = require('./unstet.js').Unstet;
 const OSC = require('osc-js');
 
-
 let autoplay=true;
 let port=9000;
 let host='localhost';
@@ -10,8 +9,7 @@ let myIP='127.0.0.1';
 
 //let shift=0;
 for(let i=2;i<process.argv.length;i++){
-    let item=process.argv[i];
-    switch(item){
+    switch(process.argv[i]){
     case '-m':
 	myIP=process.argv[i+1];
 	break;
@@ -29,8 +27,6 @@ for(let i=2;i<process.argv.length;i++){
 
 console.log(autoplay,host,port);
 
-//process.exit();
-
 const osc = new OSC({ plugin: new OSC.DatagramPlugin() });
 osc.open( { host: '0.0.0.0', port: port+1 } );
 
@@ -39,33 +35,47 @@ function sendOSC(...args){
 }
 
 //setup unstet
-let teiler = [ 1, 2, 3,5,8,13];
+let teiler = [ 1, 2, 3];
 //let period = [ 8000, 13000, 21000, 34000 ];
 //let variation = [ 0, 0, 0, 0, 800,   1600,  2400,  4000 ]; 
 let period = [ 0, 0,0,0 ];
-let variation = [ 5000,8000,13000,21000,34000,55000 ];
-//let variation = [ 5000,8000,13000,21000]; 
+let variation = [ 1000,1000,1000,1000 ];
+//let variation = [ 1000,1000,13000,21000]; 
 
 // instantiate unstet
 let unstet = new Unstet( teiler, period, variation );
 
 // send hello 
 setInterval( () => { sendOSC('/hello',myIP,port+1) },5000);
+
 // send bangs
 unstet.on( 'bang', () => { sendOSC('/bang')});
 unstet.on( 'simple', () => { sendOSC('/simple')});
 unstet.on( 'arpeggio', () => { sendOSC('/arpeggio')});
 unstet.on( 'ornament', () => { sendOSC('/ornament')});
-unstet.on( 'periodend', () => { sendOSC('/periodend')});
-unstet.on( 'zyklusend', () => { sendOSC('/zyklusendend')});
-unstet.on( 'playstart', () => { sendOSC('/playstart')});
-unstet.on( 'playstop', () => { sendOSC('/playstop')});
 //send rawbang message
 unstet.on( 'rawbang', (value) => {
     let message=new OSC.Message('/rawbang');
     for(let i=0;i<value.length;i++)message.add(value[i]);
     osc.send(message,{host: host, port: port});
 });
+unstet.on('period', (args) => {
+    let message=new OSC.Message('/period');
+    for(let i=0;i<args.length;i++)message.add(args[i]);
+    osc.send(message,{host: host, port: port});
+});
+unstet.on( 'periodend', () => { sendOSC('/periodend')});
+unstet.on( 'zyklusend', () => { sendOSC('/zyklusendend')});
+
+unstet.on( 'playstart', () => {
+    sendOSC('/playstart');
+    sendOSC('/playing', 1);
+});
+unstet.on( 'playstop', () => {
+    sendOSC('/playstop');
+    sendOSC('playing',0);
+});
+
 
 
 // receive commands

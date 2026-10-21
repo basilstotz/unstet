@@ -1,6 +1,5 @@
 #N canvas 654 232 499 754 12;
-#X obj 78 88 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 78 88 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 144 104 pack 0 100;
 #X obj 142 181 pack;
 #X obj 146 246 basic-note-abs;
@@ -8,28 +7,20 @@
 #X obj 181 295 basic-note-abs;
 #X obj 203 321 basic-note-abs;
 #X text 45 622 https://grrrr.org/research/software/upp/upp-tut1/;
-#X obj 126 246 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 143 275 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 164 298 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 185 323 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 126 246 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 143 275 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 164 298 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 185 323 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 137 28 inlet;
 #X obj 140 520 outlet~;
 #X obj 230 346 basic-note-abs;
 #X obj 245 372 basic-note-abs;
 #X obj 265 395 basic-note-abs;
 #X obj 287 421 basic-note-abs;
-#X obj 210 346 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 227 375 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 248 398 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 269 423 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 210 346 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 227 375 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 248 398 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
+#X obj 269 423 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 131 209 route 1 2 3 4 5 6 7 8;
 #X obj 145 144 poly 8 1;
 #X connect 1 0 23 0;

@@ -2,14 +2,17 @@
   "name": "unstet",
   "version": "1.0.0",
   "description": "unstet with osc output",
-    "main": "index.js",
-    "bin": { "unstet": "index.js" },
+  "main": "index.js",
+  "bin": {
+    "unstet": "index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Basil Stotz",
   "license": "GPL-3.0",
   "dependencies": {
-    "osc-js": "^2.4.1"
+    "osc-js": "^2.4.1",
+    "simple-vector": "^0.0.14"
   }
 }

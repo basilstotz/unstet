@@ -6,7 +6,7 @@
 #X obj 120 213 *~;
 #X obj 125 250 outlet~;
 #X obj 248 133 vline~;
-#X msg 250 101 0.25 10 \, 0 800 20;
+#X msg 250 101 0.1 10 \, 0 800 20;
 #X connect 0 0 1 0;
 #X connect 1 0 2 0;
 #X connect 1 1 7 0;

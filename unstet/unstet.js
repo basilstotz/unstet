@@ -41,6 +41,69 @@ let arpeggio = [
     [ 0, 3, 5, 6 ]
 ];
 
+class PerlinNoise1D {
+  constructor() {
+    // 1. Permutationstabelle (Zufällige Anordnung der Zahlen 0-255)
+    const p = Array.from({ length: 256 }, (_, i) => i).sort(() => Math.random() - 0.5);
+    // Verdoppeln für sicheren Indexzugriff bei (x + 1)
+    this.permutation = [...p, ...p];
+  }
+
+  // 2. Fade-Funktion (Glättungskurve nach Ken Perlin)
+  fade(t) {
+    return t * t * t * (t * (t * 6 - 15) + 10);
+  }
+
+  // 3. Lineare Interpolation (Lerp)
+  lerp(t, a, b) {
+    return a + t * (b - a);
+  }
+
+  // 4. 1D Gradientenfunktion: Bestimmt das Skalarprodukt basierend auf dem Hash
+  grad(hash, x) {
+    // Wenn das erste Bit des Hashes 0 ist, ist der Vektor +1, sonst -1
+    return (hash & 1) === 0 ? x : -x;
+  }
+
+  // Hauptfunktion für 1D Noise
+  noise(x) {
+    // Bestimme die linke Gitterecke (Integer-Wert)
+    let X = Math.floor(x) & 255;
+
+    // Relative Position innerhalb der Zelle (0.0 bis 1.0)
+    let xf = x - Math.floor(x);
+
+    // Glättungsfaktor berechnen
+    let u = this.fade(xf);
+
+    // Hash-Werte für die linke (X) und rechte (X + 1) Ecke holen
+    const a = this.permutation[X];
+    const b = this.permutation[X + 1];
+
+    // Skalarprodukte für beide Ecken berechnen
+    const gradLeft = this.grad(a, xf);       // Abstand zur linken Ecke ist xf
+    const gradRight = this.grad(b, xf - 1);  // Abstand zur rechten Ecke ist xf - 1
+
+    // Finale Interpolation zwischen den beiden Werten
+    return this.lerp(u, gradLeft, gradRight);
+  }
+}
+
+
+// --- ANWENDUNGSBEISPIEL ---
+const perlin = new PerlinNoise1D();
+
+/*
+// Auch hier gilt: Skaliere die Werte mit einem kleinen Schrittfaktor!
+let step = 0.05;
+for (let i = 0; i < 10; i++) {
+  console.log(`Noise bei Position ${i * step}:`, perlin.noise(i * step));
+}
+*/
+
+
+
+
 //https://en.wikipedia.org/wiki/Lagged_Fibonacci_generator
 class LaggedFibonacciGenerator {
     /**
@@ -50,7 +113,8 @@ class LaggedFibonacciGenerator {
      * @param {number} j - Kleinerer Lag-Wert
      * @param {number} k - Grösserer Lag-Wert
      */
-    constructor(seed = null, j = 24, k = 55 ) {
+    //    constructor(seed = null, j = 24, k = 55 ) {
+    constructor(seed = null, j = 128, k = 159 ) {
         if (j >= k) {
             throw new Error("Der Lag 'j' muss strikt kleiner sein als 'k'.");
         }
@@ -289,9 +353,6 @@ class Phase extends EventEmitter {
 	//console.log("lf ",length,factor)
 	for (const [key, value] of Object.entries(this.phasePrototype)) {
 	    let newtime=Math.round(Number(key)*factor);
-	    //let newvalue=value;
-	    //for(let i=2;i<7;i++)newvalue[i]=mulberry.random();
-	    //console.log(key,newtime,value);
 	    bang[newtime]=value
 	}
 	return bang;
@@ -395,9 +456,17 @@ class Period extends Phase {
 
 	let current = 0;
 
-	const addRandom = (value ) => {
+	const addRandom = (time,value) => {
+	    let f = fibonacci.next();
+	    let p =perlin.noise(time/(1000*10))+0.5;
+	    let r;
+	    if(value[TYPE]==0){r = f}else{r = p}
+	    
 	    let len = TYPE+1
-	    for(let i=len;i<len+6;i++){
+	    value[len] = f;
+	    value[len+1] = p;
+	    value[len+2] = r;
+	    for(let i=len+3;i<len+3+6;i++){
 		//value[i]=mulberry.next();
 		value[i]=fibonacci.next();
 	    }
@@ -416,7 +485,7 @@ class Period extends Phase {
 	    value[DELTA] = del;
 	    //console.log("b",value[DELTA]);
 	    value[TYPE] = ARPEGGIO;
-	    if(add)addRandom(value);
+	    if(add)addRandom(start,value);
 
 	    // start with one (not zero)
 	    for(let i=1;i<arp.length;i++){
@@ -427,7 +496,7 @@ class Period extends Phase {
 		bang[time][DELTA] = del;
 		//console.log("o",bang[time][DELTA]);
 		bang[time][TYPE] = ORNAMENT;
-		if(add)addRandom(bang[time]);
+		if(add)addRandom(start,bang[time]);
 	    }
 	};
 
@@ -437,7 +506,7 @@ class Period extends Phase {
 
 	    value[DELTA] = 0;
 	    value[TYPE] = SIMPLE;
-	    if(add)addRandom(value);
+	    if(add)addRandom(start,value);
 	    // start with one (not zero)
 	    for(let i=1;i<length;i++){
 		let time=start+i;
@@ -446,7 +515,7 @@ class Period extends Phase {
 		bang[time][FULL] = 0;
 		bang[time][DELTA] = 0;
 		bang[time][TYPE] = ORNAMENT;
-		if(add)addRandom(bang[time]);
+		if(add)addRandom(time,bang[time]);
 	    }
 	};
 
@@ -500,6 +569,7 @@ class Period extends Phase {
 //console.log(bang);
 	const bangArray = Object.entries(bang);
 
+	
 	//forward
 	// all,  
 	for(let i=0;i<bangArray.length;i++){
@@ -538,6 +608,7 @@ class Zyklus extends Period {
 	this.zyklus=zyklus;
 	this.bangArray=[];
 	this.counter=0;
+	this.totalTime=0;
 	
 	this.playCommand = STOP;
 	this.playing=false;
@@ -576,9 +647,10 @@ class Zyklus extends Period {
     cycle(that){
 	if(that.playCommand == PLAY){
 	    let { index, forward } = krebs(that.zyklus.length,that.counter);
+
 	    let period = that.zyklus[index];
 	    let playTime = that.getPeriodTime(period);
-	    
+	    that.totalTime += playTime
 	    if(!that.bangArray[index]){
 		console.log("info: makePeriod");
 		that.bangArray[index]=that.makePeriod(period);
@@ -588,6 +660,10 @@ class Zyklus extends Period {
 		console.log("info: ornamentPeriod");
 		that.ornamentPeriod(that.bangArray[index],true);
 	    }
+
+
+	    let args = [that.counter,index,playTime];
+	    that.emit('period',args);
 	    
 	    that.emitPeriod(that.bangArray[index]);
 

@@ -30,8 +30,7 @@
 #X obj 132 273 list trim;
 #X obj 431 129 8-noise-abs .....;
 #X obj 65 77 route speaker aed synth noise locate listen;
-#X obj 51 293 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
--1;
+#X obj 51 293 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc #000000 #000000;
 #X obj 38 372 print osc;
 #X obj 582 125 8-mini-synth-abs .....;
 #X connect 0 0 14 0;
